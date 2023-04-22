@@ -139,7 +139,10 @@ public class GameLogic extends JPanel implements ActionListener{
 		  
 		  /*Checking for collisions with houses*/
 			  
-			  if ((car_x == 0 && car_y == 1 && (ch & 0) != 0)) {
+			  if ((car_x == 0 && car_y == 1 && (ch & 0) != 0)
+					  || (car_x == 0 && car_y == -1 && (ch & 0) != 0)
+					  || (car_x == 1 && car_y == 0 && (ch & 0) != 0)
+					  || (car_x == -1 && car_y == 0 && (ch & 0) != 0)) {
 		          car_x = 0;
 		          car_y = 0;
 			  }
