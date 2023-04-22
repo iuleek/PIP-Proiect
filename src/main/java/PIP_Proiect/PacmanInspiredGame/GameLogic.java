@@ -5,6 +5,8 @@ import java.awt.*;                      //Font, Image, Dimension
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import javax.swing.Timer;
@@ -88,9 +90,6 @@ public class GameLogic extends JPanel implements ActionListener{
     timer.restart();
   }
   
-  class TAdapter extends KeyAdapter{
-    
-  }
   private void setFocusable() {
    
   }
@@ -107,6 +106,80 @@ public class GameLogic extends JPanel implements ActionListener{
     // To initialize level we copy the playfield from levelData to new array screenData
     for(int i = 0; i< n_blocks * n_blocks; i++) {
       screenData[i] = levelData[i];
+    }
+  }
+  
+/* The way that the car moves */ 
+  
+  private void movePacman() {
+	  int pos;
+	  short ch;
+	  
+	  if(car_x % block_size == 0 && car_y % block_size == 0) {
+		  
+		  pos = car_x / block_size + n_blocks * (int) (car_y / block_size);
+		  ch = screenData[pos];
+		  
+		  /* daca masina e pe blocul cu pachetul acesta este luat si devine drum normal */
+		  if((ch & 64) != 0)
+		  {
+			  screenData[pos] = (short) (ch&16);
+		  }
+		  
+		  if(req_dx != 0 || req_dy != 0)
+		  {
+			  if(!((req_dx == -1 && req_dy == 0 && (ch & 1) !=0) 
+					  || (req_dx == 1 && req_dy == 0 && (ch & 4) != 0) 
+					  || (req_dx == 0 && req_dy == -1 && (ch & 8) != 0) 
+					  || (req_dx == 0 && req_dy == 1 && (ch & 2) != 0))){
+				  car_dx = req_dx;
+				  car_dy = req_dy;
+			  }
+		  }
+		  
+		  
+		  
+	  }
+  }
+ 
+  
+  /* CONTROLS
+   * SPACE - START 
+   * ESC - EXIT GAME
+   * ARROWS - MOVE */
+  
+  class TAdapter extends KeyAdapter {
+	  
+    public void keyPressed(KeyEvent e)
+    {
+    	int key = e.getKeyCode();
+    	
+    	if(runGame) {
+    		if(key == KeyEvent.VK_LEFT) {
+    			req_dx = -1;
+    			req_dy = 0;
+    		}
+    		else if(key == KeyEvent.VK_RIGHT) {
+    			req_dx = 1;
+    			req_dy = 0;
+    		}
+    		else if(key == KeyEvent.VK_DOWN) {
+    			req_dx = 0;
+    			req_dy = 1;
+    		}
+    		else if(key == KeyEvent.VK_UP) {
+    			req_dx = 0;
+    			req_dy = -1;
+    		}
+    		else if(key == KeyEvent.VK_ESCAPE && timer.isRunning()) {
+    			runGame = false;
+    		}
+    	}else {
+    		if(key == KeyEvent.VK_SPACE) {
+    			runGame = true;
+    			initGame();
+    		}
+    	}
     }
   }
   
