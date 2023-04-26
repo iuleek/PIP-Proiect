@@ -141,12 +141,12 @@ public class GameLogic extends JPanel implements ActionListener{
 		  pos = car_x / block_size + n_blocks * (int) (car_y / block_size);
 		  ch = screenData[pos];
 		  
-		  /* daca masina e pe blocul cu pachetul acesta este luat si devine drum normal */
+		  /* If the car is on the block with a package, the package disappears */
 		  if((ch & 64) != 0)
 		  {
 			  screenData[pos] = (short) (ch&16);
 		  }
-		  
+
 		  if(req_dx != 0 || req_dy != 0)
 		  {
 			  if(!((req_dx == -1 && req_dy == 0 && (ch & 1) !=0) 
@@ -158,8 +158,16 @@ public class GameLogic extends JPanel implements ActionListener{
 			  }
 		  }
 		  
-		  /*Checking for collisions with houses*/
-			  
+		  /*Checking for collisions with borders*/
+		  if (req_dx == -1 && car_x <= 0 
+		      || req_dx == 1 && car_x >= n_blocks * block_size 
+              || req_dy == -1 && car_y <= 0 
+              || req_dy == 1 && car_y >= n_blocks * block_size ) {
+          car_dx = 0;
+          car_dy = 0;
+      }
+		  
+		  /*Checking for collisions with houses*/  
 			  if ((car_x == 0 && car_y == 1 && (ch & 0) != 0)
 					  || (car_x == 0 && car_y == -1 && (ch & 0) != 0)
 					  || (car_x == 1 && car_y == 0 && (ch & 0) != 0)
@@ -210,6 +218,8 @@ public class GameLogic extends JPanel implements ActionListener{
     			initGame();
     		}
     	}
+    	 car_x += req_dx * block_size;
+         car_y += req_dy * block_size;
     }
   }
   
