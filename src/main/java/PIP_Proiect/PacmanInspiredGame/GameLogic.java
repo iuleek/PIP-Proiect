@@ -71,10 +71,31 @@ public class GameLogic extends JPanel implements ActionListener{
   }
   
   // Functions definition
-  private void loadImages() {
-    
-  }
-  
+	private void loadImages() {
+		down = new ImageIcon("/src/main/java/images/car_down.png").getImage();
+		up = new ImageIcon("/src/main/java/images/car_up.png").getImage();
+		left = new ImageIcon("/src/main/java/images/car_left.png").getImage();
+		right = new ImageIcon("/src/main/java/images/car_right.png").getImage();
+		passer = new ImageIcon("/src/main/java/images/p_front.png").getImage();
+	}
+
+	private void drawPasser(Graphics2D g2d, int x, int y) {
+		g2d.drawImage(passer, x, y, this);
+	}
+
+	private void drawCar(Graphics2D g2d) {
+
+		if (req_dx == -1) {
+			g2d.drawImage(left, car_x + 1, car_y + 1, this);
+		} else if (req_dx == 1) {
+			g2d.drawImage(right, car_x + 1, car_y + 1, this);
+		} else if (req_dy == -1) {
+			g2d.drawImage(up, car_x + 1, car_y + 1, this);
+		} else {
+			g2d.drawImage(down, car_x + 1, car_y + 1, this);
+		}
+	}
+
   private void initVariables() {
     screenData = new short[n_blocks * n_blocks];
     d = new Dimension(400,400);
