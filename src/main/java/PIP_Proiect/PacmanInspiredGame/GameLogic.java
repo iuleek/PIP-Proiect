@@ -17,6 +17,7 @@ public class GameLogic extends JPanel implements ActionListener{
   private final Font smallFont = new Font("Arial", Font.BOLD,14);   // To display Text in the game
   private boolean runGame = false;                                  // State of the game - running/ not running
   private boolean dying = false;                                    // Player is alive or not
+  private int numPackages = 0;                                      // Number of packages picked up by the driver
   
   private final int block_size = 24;                                // How big blocks are in the game
   private final int n_blocks = 15;                                  // Number of blocks - 15 width 15 height => 255 possible positions
@@ -131,8 +132,7 @@ public class GameLogic extends JPanel implements ActionListener{
   }
   
 /* The way that the car moves */ 
-  
-  private void movePacman() {
+  private void moveCar() {
 	  int pos;
 	  short ch;
 	  
@@ -223,8 +223,69 @@ public class GameLogic extends JPanel implements ActionListener{
     }
   }
   
+  private void showIntroScreen(Graphics2D g2d) {
+    
+    String start = "Press SPACE to start";
+    g2d.setColor(Color.red);
+    g2d.drawString(start, (screen_size)/4, 150);
+}
+
+  private void drawScore(Graphics2D g) {
+    g.setFont(smallFont);
+    g.setColor(new Color(5, 181, 79));
+    String s = "Score: " + score;
+    g.drawString(s, screen_size / 2 + 96, screen_size + 16);
+
+    for (int i = 0; i < lives; i++) {
+        g.drawImage(heart, i * 28 + 8, screen_size + 1, this);
+    }
+}
+
+  // Checking if there are any packages left to deliver by our driver - 64 stands for the package existing
+  private void checkMaze() {
+
+    boolean allPackagesDelivered = true;                        // Set a boolean variable allPackagesDelivered to true,
+                                                                // indicating that all packages have been delivered. 
+
+    for (int i = 0; i < screenData.length; i++) {               // Iterate over all the elements in the screenData array
+      if ((screenData[i] & 64) != 0) {                          // and check if any element contains a package
+          allPackagesDelivered = false;                         // If we find any packages that have not been picked up yet 
+          break;                                                // We set allPackagesDelivered to false and break out of the loop.
+      }
+  }
+
+    if (allPackagesDelivered) {                                 //  If allPackagesDelivered is still true, we can move to the next level.
+
+        score += 50;                                            // Increasing the score by 50
+
+        if (n_passers < max_passers) {
+            n_passers++;
+        }
+
+        if (currentSpeed < maxSpeed) {
+            currentSpeed++;
+        }
+
+        initLevel();
+    }
+}
+
+private void death() {
+
+    lives--;
+
+    if (lives == 0) {
+        runGame = false;
+    }
+
+    continueLevel();
+}
   
+  private void continueLevel() {
+  // TODO Auto-generated method stub
   
+}
+
   @Override
   public void actionPerformed(ActionEvent e) {
     // TODO Auto-generated method stub
