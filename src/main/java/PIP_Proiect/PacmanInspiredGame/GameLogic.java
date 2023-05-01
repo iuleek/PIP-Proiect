@@ -16,8 +16,11 @@ public class GameLogic extends JPanel implements ActionListener{
   private Dimension d;                                              // Height and Width of the playing field
   private final Font smallFont = new Font("Arial", Font.BOLD,14);   // To display Text in the game
   private boolean runGame = false;                                  // State of the game - running/ not running
+
   private boolean dying = false;                                    // Player is alive or not
-  private boolean carrying = false;                                        // Variable that it's true if the car is not in delivering state(not carrying a package) and false otherwise
+  private boolean carrying = false;                                 // Variable that it's true if the car is not in delivering state(not carrying a package) and false otherwise
+  private boolean pickUp = false; 
+
   
   private final int block_size = 24;                                // How big blocks are in the game
   private final int n_blocks = 15;                                  // Number of blocks - 15 width 15 height => 255 possible positions
@@ -129,8 +132,45 @@ public class GameLogic extends JPanel implements ActionListener{
     for(int i = 0; i< n_blocks * n_blocks; i++) {
       screenData[i] = levelData[i];
     }
+    continueLevel();
   }
   
+  private void continueLevel() {
+	  
+	  int dy = 1;
+	  int random;
+	  
+	  for(int i = 0; i < n_passers; i++) {
+		  
+		  passer_x[i] = 4 * block_size;
+		  passer_y[i] = 9 * block_size;
+		  
+		  passer_dy[i] = dy;
+          passer_dx[i] = 0;
+          
+          dy = -dy;
+          
+          random = (int) (Math.random() * (currentSpeed + 1));
+          
+          if (random > currentSpeed) {
+              random = currentSpeed;
+          }
+
+          passerSpeed[i] = validSpeeds[random];
+	  }
+	
+	car_x = 10 * block_size;
+	car_y = 13 * block_size;
+	
+	car_dx = 0; 				//reset direction move
+	car_dy = 0;
+	
+	req_dx = 0;					//reset direction controls
+	req_dy = 0;
+	
+	dying = false;
+  }
+
 /* The way that the car moves */ 
   private void moveCar() {
 	  int pos;
@@ -219,8 +259,10 @@ public class GameLogic extends JPanel implements ActionListener{
     			initGame();
     		}
     	}
+
     	 car_x += req_dx * block_size;
          car_y += req_dy * block_size;
+
     }
   }
   
@@ -288,11 +330,7 @@ public class GameLogic extends JPanel implements ActionListener{
 
     continueLevel();
 }
-  
-  private void continueLevel() {
-  // TODO Auto-generated method stub
-  
-}
+
 
   @Override
   public void actionPerformed(ActionEvent e) {
