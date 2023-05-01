@@ -16,7 +16,11 @@ public class GameLogic extends JPanel implements ActionListener{
   private Dimension d;                                              // Height and Width of the playing field
   private final Font smallFont = new Font("Arial", Font.BOLD,14);   // To display Text in the game
   private boolean runGame = false;                                  // State of the game - running/ not running
+
   private boolean dying = false;                                    // Player is alive or not
+  private boolean carrying = false;                                 // Variable that it's true if the car is not in delivering state(not carrying a package) and false otherwise
+  private boolean pickUp = false; 
+
   
   private final int block_size = 24;                                // How big blocks are in the game
   private final int n_blocks = 15;                                  // Number of blocks - 15 width 15 height => 255 possible positions
@@ -128,11 +132,47 @@ public class GameLogic extends JPanel implements ActionListener{
     for(int i = 0; i< n_blocks * n_blocks; i++) {
       screenData[i] = levelData[i];
     }
+    continueLevel();
   }
   
+  private void continueLevel() {
+	  
+	  int dy = 1;
+	  int random;
+	  
+	  for(int i = 0; i < n_passers; i++) {
+		  
+		  passer_x[i] = 4 * block_size;
+		  passer_y[i] = 9 * block_size;
+		  
+		  passer_dy[i] = dy;
+          passer_dx[i] = 0;
+          
+          dy = -dy;
+          
+          random = (int) (Math.random() * (currentSpeed + 1));
+          
+          if (random > currentSpeed) {
+              random = currentSpeed;
+          }
+
+          passerSpeed[i] = validSpeeds[random];
+	  }
+	
+	car_x = 10 * block_size;
+	car_y = 13 * block_size;
+	
+	car_dx = 0; 				//reset direction move
+	car_dy = 0;
+	
+	req_dx = 0;					//reset direction controls
+	req_dy = 0;
+	
+	dying = false;
+  }
+
 /* The way that the car moves */ 
-  
-  private void movePacman() {
+  private void moveCar() {
 	  int pos;
 	  short ch;
 	  
@@ -141,12 +181,13 @@ public class GameLogic extends JPanel implements ActionListener{
 		  pos = car_x / block_size + n_blocks * (int) (car_y / block_size);
 		  ch = screenData[pos];
 		  
-		  /* daca masina e pe blocul cu pachetul acesta este luat si devine drum normal */
+		  /* If the car is on the block with a package, the package disappears */
 		  if((ch & 64) != 0)
 		  {
 			  screenData[pos] = (short) (ch&16);
+			  carrying = true;                                                   // The driver picked up the package and has to deliver it
 		  }
-		  
+
 		  if(req_dx != 0 || req_dy != 0)
 		  {
 			  if(!((req_dx == -1 && req_dy == 0 && (ch & 1) !=0) 
@@ -158,15 +199,24 @@ public class GameLogic extends JPanel implements ActionListener{
 			  }
 		  }
 		  
+
 		  /*Checking for collisions with houses*/
 			  
 			  if ((car_x == 0 && car_y == 1 && (ch & 8) != 0)
 					  || (car_x == 0 && car_y == -1 && (ch & 2) != 0)
 					  || (car_x == 1 && car_y == 0 && (ch & 4) != 0)
 					  || (car_x == -1 && car_y == 0 && (ch & 1) != 0)) {
-		          car_x = 0;
-		          car_y = 0;
-			  }
+
+		  /*Checking for collisions with borders*/
+		  if (req_dx == -1 && car_x <= 0 
+		      || req_dx == 1 && car_x >= n_blocks * block_size 
+              || req_dy == -1 && car_y <= 0 
+              || req_dy == 1 && car_y >= n_blocks * block_size ) {
+          car_dx = 0;
+          car_dy = 0;
+      }
+		  
+	
 		  
 		  
 	  }
@@ -210,11 +260,79 @@ public class GameLogic extends JPanel implements ActionListener{
     			initGame();
     		}
     	}
+
+    	 car_x += req_dx * block_size;
+         car_y += req_dy * block_size;
+
     }
   }
   
   
-  
+  // The intro screen for the game - first thing the player sees
+  private void showIntroScreen(Graphics2D g2d) {
+    String start = "Press SPACE to start";                      // Text for the intro screen
+    g2d.setColor(Color.red);                                    // Color for the text
+    g2d.drawString(start, (screen_size)/4, 150);                // Positioning the text
+}
+
+  // Display of the score and lives 
+  private void drawScore(Graphics2D g) {
+    g.setFont(smallFont);
+    g.setColor(new Color(5, 181, 79));
+    String s = "Score: " + score;
+    g.drawString(s, screen_size / 2 + 96, screen_size + 16);
+
+    for (int i = 0; i < lives; i++) {                           // Display the number of hearts(lives)
+        g.drawImage(heart, i * 28 + 8, screen_size + 1, this);
+    }
+}
+
+  // Checking if there are any packages left to deliver by our driver - 64 stands for the package existing
+  private void checkMaze() {
+
+    boolean allPackagesDelivered = true;                        // Set a boolean variable allPackagesDelivered to true,
+                                                                // indicating that all packages have been delivered. 
+
+    for (int i = 0; i < screenData.length; i++) {               // Iterate over all the elements in the screenData array
+      if ((screenData[i] & 64) != 0) {                          // and check if any element contains a package
+          allPackagesDelivered = false;                         // If we find any packages that have not been picked up yet 
+          break;                                                // We set allPackagesDelivered to false and break out of the loop.
+      }
+      if (carrying == true)
+      {
+        allPackagesDelivered = false;     
+      }
+  }
+
+    if (allPackagesDelivered) {                                 //  If allPackagesDelivered is still true, we can move to the next level.
+
+        score += 50;                                            // Increasing the score by 50
+
+        if (n_passers < max_passers) {
+            n_passers++;
+        }
+
+        if (currentSpeed < maxSpeed) {
+            currentSpeed++;
+        }
+
+        initLevel();                                            // For now we restart the game when we completed delivering packages and just increase the number of passers and their speed
+    }
+}
+
+  // Establishing the number of lives and according to that either stop the game or continue
+  private void death() {
+
+    lives--;
+
+    if (lives == 0) {
+        runGame = false;
+    }
+
+    continueLevel();
+}
+
+
   @Override
   public void actionPerformed(ActionEvent e) {
     // TODO Auto-generated method stub
