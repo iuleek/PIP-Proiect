@@ -198,15 +198,6 @@ public class GameLogic extends JPanel implements ActionListener{
 				  car_dy = req_dy;
 			  }
 		  }
-		  
-
-		  /*Checking for collisions with houses*/
-			  
-			  if ((car_x == 0 && car_y == 1 && (ch & 8) != 0)
-					  || (car_x == 0 && car_y == -1 && (ch & 2) != 0)
-					  || (car_x == 1 && car_y == 0 && (ch & 4) != 0)
-					  || (car_x == -1 && car_y == 0 && (ch & 1) != 0)) {
-
 		  /*Checking for collisions with borders*/
 		  if (req_dx == -1 && car_x <= 0 
 		      || req_dx == 1 && car_x >= n_blocks * block_size 
@@ -215,6 +206,16 @@ public class GameLogic extends JPanel implements ActionListener{
           car_dx = 0;
           car_dy = 0;
       }
+		  
+
+		  /*Checking for collisions with houses*/
+			  
+		  if ((car_dx == 0 && car_dy == 1 && (ch & 8) != 0)
+				|| (car_dx == 0 && car_dy == -1 && (ch & 2) != 0)
+				|| (car_dx == 1 && car_dy == 0 && (ch & 4) != 0)
+				|| (car_dx == -1 && car_dy == 0 && (ch & 1) != 0)) {
+
+
 		  
 	
 		  
