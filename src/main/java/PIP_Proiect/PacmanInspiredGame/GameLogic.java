@@ -17,7 +17,7 @@ public class GameLogic extends JPanel implements ActionListener{
   private final Font smallFont = new Font("Arial", Font.BOLD,14);   // To display Text in the game
   private boolean runGame = false;                                  // State of the game - running/ not running
   private boolean dying = false;                                    // Player is alive or not
-  private int numPackages = 0;                                      // Number of packages picked up by the driver
+  private boolean carrying = false;                                        // Variable that it's true if the car is not in delivering state(not carrying a package) and false otherwise
   
   private final int block_size = 24;                                // How big blocks are in the game
   private final int n_blocks = 15;                                  // Number of blocks - 15 width 15 height => 255 possible positions
@@ -145,6 +145,7 @@ public class GameLogic extends JPanel implements ActionListener{
 		  if((ch & 64) != 0)
 		  {
 			  screenData[pos] = (short) (ch&16);
+			  carrying = true;                                                   // The driver picked up the package and has to deliver it
 		  }
 
 		  if(req_dx != 0 || req_dy != 0)
@@ -223,20 +224,22 @@ public class GameLogic extends JPanel implements ActionListener{
     }
   }
   
+  
+  // The intro screen for the game - first thing the player sees
   private void showIntroScreen(Graphics2D g2d) {
-    
-    String start = "Press SPACE to start";
-    g2d.setColor(Color.red);
-    g2d.drawString(start, (screen_size)/4, 150);
+    String start = "Press SPACE to start";                      // Text for the intro screen
+    g2d.setColor(Color.red);                                    // Color for the text
+    g2d.drawString(start, (screen_size)/4, 150);                // Positioning the text
 }
 
+  // Display of the score and lives 
   private void drawScore(Graphics2D g) {
     g.setFont(smallFont);
     g.setColor(new Color(5, 181, 79));
     String s = "Score: " + score;
     g.drawString(s, screen_size / 2 + 96, screen_size + 16);
 
-    for (int i = 0; i < lives; i++) {
+    for (int i = 0; i < lives; i++) {                           // Display the number of hearts(lives)
         g.drawImage(heart, i * 28 + 8, screen_size + 1, this);
     }
 }
@@ -252,6 +255,10 @@ public class GameLogic extends JPanel implements ActionListener{
           allPackagesDelivered = false;                         // If we find any packages that have not been picked up yet 
           break;                                                // We set allPackagesDelivered to false and break out of the loop.
       }
+      if (carrying == true)
+      {
+        allPackagesDelivered = false;     
+      }
   }
 
     if (allPackagesDelivered) {                                 //  If allPackagesDelivered is still true, we can move to the next level.
@@ -266,11 +273,12 @@ public class GameLogic extends JPanel implements ActionListener{
             currentSpeed++;
         }
 
-        initLevel();
+        initLevel();                                            // For now we restart the game when we completed delivering packages and just increase the number of passers and their speed
     }
 }
 
-private void death() {
+  // Establishing the number of lives and according to that either stop the game or continue
+  private void death() {
 
     lives--;
 
