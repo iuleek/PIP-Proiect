@@ -19,7 +19,6 @@ public class GameLogic extends JPanel implements ActionListener{
 
   private boolean dying = false;                                    // Player is alive or not
   private boolean carrying = false;                                 // Variable that it's true if the car is not in delivering state(not carrying a package) and false otherwise
-  private boolean pickUp = false; 
 
   
   private final int block_size = 24;                                // How big blocks are in the game
@@ -134,6 +133,24 @@ public class GameLogic extends JPanel implements ActionListener{
     }
     continueLevel();
   }
+
+private void playGame(Graphics2D g2d) {
+
+	if(dying)
+	{
+		death();
+		
+	}else {
+		
+		moveCar();
+		drawCar(g2d);
+		movePassers(g2d);
+		checkMaze();
+		
+	}
+}
+
+  
   
   private void continueLevel() {
 	  
@@ -180,8 +197,8 @@ public class GameLogic extends JPanel implements ActionListener{
 	  for (int i = 0; i<n_passers; i++) {
 		  
 		  // the passer move one square and the decides if want to change direction after finish movving in square
-		  if(passer_x[i] % block_size == 0 && passer_y[i]%block_size == 0)
-			  pos = passer_x[i]  / block_size + n_blocks * (int) (passer_y[i] / block_size)
+		  if(passer_x[i] % block_size == 0 && passer_y[i]%block_size == 0) {
+			  pos = passer_x[i]  / block_size + n_blocks * (int) (passer_y[i] / block_size);
 			  count = 0;
 		  
 		  //determining how the passer can move, the passer can't go through houses
@@ -232,7 +249,7 @@ public class GameLogic extends JPanel implements ActionListener{
               passer_dy[i] = dy[count];
           }
 
-      }
+		  }
       passer_x[i] = passer_x[i] + (passer_dx[i] * passerSpeed[i]);
       passer_y[i] = passer_y[i] + (passer_dy[i] * passerSpeed[i]);
 	  drawPasser(g2d, passer_x[i] + 1, passer_y[i] + 1);
@@ -294,7 +311,7 @@ public class GameLogic extends JPanel implements ActionListener{
 		  }
   }
  
-  
+  }
   /* CONTROLS
    * SPACE - START 
    * ESC - EXIT GAME
@@ -391,6 +408,28 @@ public class GameLogic extends JPanel implements ActionListener{
         initLevel();                                            // For now we restart the game when we completed delivering packages and just increase the number of passers and their speed
     }
 }
+//Putting the graphics together
+public void paintcomponent(Graphics g)
+{
+	super.paintComponent(g);
+
+	Graphics2D g2d = (Graphics2D) g;
+
+	g2d.setColor(Color.black);
+	g2d.fillRect(0, 0, d.width, d.height);
+
+	drawMaze(g2d);
+	drawScore(g2d);
+
+	if (runGame) {
+		playGame(g2d);
+	} else {
+		showIntroScreen(g2d);
+	}
+	Toolkit.getDefaultToolkit().sync();
+	g2d.dispose();
+}
+
 
   // Establishing the number of lives and according to that either stop the game or continue
   private void death() {
