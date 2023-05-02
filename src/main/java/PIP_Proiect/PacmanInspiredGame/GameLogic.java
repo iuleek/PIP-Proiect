@@ -171,6 +171,81 @@ public class GameLogic extends JPanel implements ActionListener{
 	dying = false;
   }
 
+  //passers movement function
+  private void movePassers(Graphics2D g2d) {
+	  int pos;
+	  int count;
+	  
+	  //setting the position of all 6 passers in block lines
+	  for (int i = 0; i<n_passers; i++) {
+		  
+		  // the passer move one square and the decides if want to change direction after finish movving in square
+		  if(passer_x[i] % block_size == 0 && passer_y[i]%block_size == 0)
+			  pos = passer_x[i]  / block_size + n_blocks * (int) (passer_y[i] / block_size)
+			  count = 0;
+		  
+		  //determining how the passer can move, the passer can't go through houses
+          if ((screenData[pos] & 1) == 0 && passer_dx[i] != 1) {
+              dx[count] = -1;
+              dy[count] = 0;
+              count++;
+          }
+
+          if ((screenData[pos] & 2) == 0 && passer_dy[i] != 1) {
+              dx[count] = 0;
+              dy[count] = -1;
+              count++;
+          }
+
+          if ((screenData[pos] & 4) == 0 && passer_dx[i] != -1) {
+              dx[count] = 1;
+              dy[count] = 0;
+              count++;
+          }
+
+          if ((screenData[pos] & 8) == 0 && passer_dy[i] != -1) {
+              dx[count] = 0;
+              dy[count] = 1;
+              count++;
+          }
+          
+          //
+          if (count == 0) {
+        	  //determin where the passer is located in our sqare
+              if ((screenData[pos] & 16) == 16) {
+                  passer_dx[i] = 0;
+                  passer_dy[i] = 0;
+              } else {
+                  passer_dx[i] = -passer_dx[i];
+                  passer_dy[i] = -passer_dy[i];
+              }
+
+          } else {
+
+              count = (int) (Math.random() * count);
+
+              if (count > 3) {
+                  count = 3;
+              }
+
+              passer_dx[i] = dx[count];
+              passer_dy[i] = dy[count];
+          }
+
+      }
+      passer_x[i] = passer_x[i] + (passer_dx[i] * passerSpeed[i]);
+      passer_y[i] = passer_y[i] + (passer_dy[i] * passerSpeed[i]);
+	  drawPasser(g2d, passer_x[i] + 1, passer_y[i] + 1);
+
+      if (car_x > (passer_x[i] - 12) && car_x < (passer_x[i] + 12)
+              && car_y > (passer_y[i] - 12) && car_y < (passer_y[i] + 12)
+              && runGame) {
+
+          dying = true;
+      }
+	  }
+  }
+  
 /* The way that the car moves */ 
   private void moveCar() {
 	  int pos;
@@ -198,7 +273,6 @@ public class GameLogic extends JPanel implements ActionListener{
 				  car_dy = req_dy;
 			  }
 		  }
-		  
 		  /*Checking for collisions with borders*/
 		  if (req_dx == -1 && car_x <= 0 
 		      || req_dx == 1 && car_x >= n_blocks * block_size 
@@ -208,17 +282,16 @@ public class GameLogic extends JPanel implements ActionListener{
           car_dy = 0;
       }
 		  
-		  /*Checking for collisions with houses*/  
-			  if ((car_x == 0 && car_y == 1 && (ch & 0) != 0)
-					  || (car_x == 0 && car_y == -1 && (ch & 0) != 0)
-					  || (car_x == 1 && car_y == 0 && (ch & 0) != 0)
-					  || (car_x == -1 && car_y == 0 && (ch & 0) != 0)) {
-		          car_x = 0;
-		          car_y = 0;
-			  }
-		  
-		  
-	  }
+
+		  /*Checking for collisions with houses*/
+			  
+		  if ((car_dx == 0 && car_dy == 1 && (ch & 8) != 0)
+				|| (car_dx == 0 && car_dy == -1 && (ch & 2) != 0)
+				|| (car_dx == 1 && car_dy == 0 && (ch & 4) != 0)
+				|| (car_dx == -1 && car_dy == 0 && (ch & 1) != 0)) {
+			  car_dx = 0;
+              car_dy = 0;
+		  }
   }
  
   
