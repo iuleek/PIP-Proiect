@@ -32,7 +32,7 @@ public class GameLogic extends JPanel implements ActionListener{
 	private int [] dx, dy;                                            // Position of the passers
 	private int [] passer_x, passer_y, passer_dx, passer_dy, passerSpeed;          // To determine number and position of the passer
 
-	private Image heart, passer, pack;                                      // Change the variables to passer1/passer2 if we have multiple
+	private Image heart, passer, pack;                                // Change the variables to passer1/passer2 if we have multiple
 	private Image up, down, left, right;                              // Images of our car according to the movement
 	private Image house, grass, road;
 
@@ -106,31 +106,27 @@ public class GameLogic extends JPanel implements ActionListener{
 	}
 
 	private void drawMaze(Graphics2D g2d) {
+        for(int i = 0; i< n_blocks * n_blocks; i++) {
+            if(levelData[i]==0)
+              g2d.drawImage(house,i*block_size, i*block_size,this);
+            else if(levelData[i]==19 || levelData[i]==18 || levelData[i]==17
+                || levelData[i]==16 || levelData[i]==24
+                || levelData[i]==25 || levelData[i]==28
+                || levelData[i]==20)
+              g2d.drawImage(road, i*block_size, i*block_size, this);
+            else if(levelData[i]==32 || levelData[i]==41 || levelData[i]==40
+                || levelData[i]==33 || levelData[i]==37
+                || levelData[i]==34 || levelData[i]==35
+                || levelData[i]==38 || levelData[i]==36
+                || levelData[i]==42 || levelData[i]==46
+                || levelData[i]==44)
+              g2d.drawImage(grass, i*block_size, i*block_size, this);
 
-		for(int i = 0; i< n_blocks * n_blocks; i++) {
-			if(levelData[i]==0)
-				g2d.drawImage(house,i*block_size, i*block_size,this);
-
-			else if(levelData[i]==19 || levelData[i]==18 || levelData[i]==17
-					|| levelData[i]==16 || levelData[i]==24
-					|| levelData[i]==25 || levelData[i]==28
-					|| levelData[i]==20)
-				g2d.drawImage(road, i*block_size, i*block_size, this);
-
-			else if(levelData[i]==32 || levelData[i]==41 || levelData[i]==40
-					|| levelData[i]==33 || levelData[i]==37
-					|| levelData[i]==34 || levelData[i]==35
-					|| levelData[i]==38 || levelData[i]==36
-					|| levelData[i]==42 || levelData[i]==46
-					|| levelData[i]==44)
-				g2d.drawImage(grass, i*block_size, i*block_size, this);
-
-			else if (levelData[i]==80) {
-				g2d.drawImage(pack, i*block_size, i*block_size, this);
-
-			}
-		}
-	}
+            else if (levelData[i]==80) {
+              g2d.drawImage(pack, i*block_size, i*block_size, this);
+            }
+        }
+}
 
 	private void initVariables() {
 		screenData = new short[n_blocks * n_blocks];
@@ -145,10 +141,6 @@ public class GameLogic extends JPanel implements ActionListener{
 
 		timer = new Timer(40, this);             // Establishes how often the images are redraw
 		timer.restart();
-	}
-
-	private void setFocusable() {
-
 	}
 
 	private void initGame() {
