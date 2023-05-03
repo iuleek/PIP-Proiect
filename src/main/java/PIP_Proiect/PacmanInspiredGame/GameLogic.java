@@ -12,8 +12,8 @@ import javax.swing.JPanel;
 import javax.swing.Timer;
 
 public class GameLogic extends JPanel implements ActionListener{
-
-	private Dimension d;                                              // Height and Width of the playing field
+  
+    private Dimension d;                                              // Height and Width of the playing field
 	private final Font smallFont = new Font("Arial", Font.BOLD,14);   // To display Text in the game
 	private boolean runGame = false;                                  // State of the game - running/ not running
 
@@ -46,7 +46,7 @@ public class GameLogic extends JPanel implements ActionListener{
 	private Timer timer;                                              // Allows animations
 
 	// 0 - house obstacle; 1- left border; 2 - top border; 4 - right border
-	// 9 - bottom border; 16 - road; 32 - grass; 64 - package
+	// 8 - bottom border; 16 - road; 32 - grass; 64 - package
 	private final short levelData[] = {
 			19, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 38,  0,  0,
 			17, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 36,  0,  0,
@@ -72,20 +72,22 @@ public class GameLogic extends JPanel implements ActionListener{
 		addKeyListener(new TAdapter());     // Function - Control
 		setFocusable(true);                 // Function - Setting the focus of the window
 		initGame();                         // Function - Starts the game
+		System.out.println("Message2");
 	}
 
 	// Functions definition
 	private void loadImages() {
-		down = new ImageIcon("/src/main/java/images/car_down.png").getImage();
-		up = new ImageIcon("/src/main/java/images/car_up.png").getImage();
-		left = new ImageIcon("/src/main/java/images/car_left.png").getImage();
-		right = new ImageIcon("/src/main/java/images/car_right.png").getImage();
-		passer = new ImageIcon("/src/main/java/images/p_front.png").getImage();
+		down = new ImageIcon("PacmanInspiredGame\\src\\main\\java\\images\\car_down.png").getImage();
+		up = new ImageIcon("PacmanInspiredGame\\src\\main\\java\\images\\car_up.png").getImage();
+		left = new ImageIcon("PacmanInspiredGame\\src\\main\\java\\images\\car_left.png").getImage();
+		right = new ImageIcon("PacmanInspiredGame\\src\\main\\java\\images\\car_right.png").getImage();
+		passer = new ImageIcon("PacmanInspiredGame\\src\\main\\java\\images\\p_front.png").getImage();
 
-		pack=new ImageIcon("/src/main/java/images/pack.png").getImage();
-		house=new ImageIcon("/src/main/java/images/house1.png").getImage();
-		road=new ImageIcon("/src/main/java/images/road.png").getImage();
-		grass=new ImageIcon("/src/main/java/images/grass.png").getImage();
+		pack=new ImageIcon("PacmanInspiredGame\\src\\main\\java\\images\\pack.png").getImage();
+		house=new ImageIcon("PacmanInspiredGame\\src\\main\\java\\images\\house1.png").getImage();
+		road=new ImageIcon("PacmanInspiredGame\\src\\main\\java\\images\\road.png").getImage();
+		grass=new ImageIcon("PacmanInspiredGame\\src\\main\\java\\images\\grass.png").getImage();
+		System.out.println("Message3");
 	}
 
 	private void drawPasser(Graphics2D g2d, int x, int y) {
@@ -140,7 +142,8 @@ public class GameLogic extends JPanel implements ActionListener{
 		dy = new int[4];
 
 		timer = new Timer(40, this);             // Establishes how often the images are redraw
-		timer.restart();
+		timer.start();
+		System.out.println("Message4");
 	}
 
 	private void initGame() {
@@ -155,6 +158,7 @@ public class GameLogic extends JPanel implements ActionListener{
 		// To initialize level we copy the playfield from levelData to new array screenData
 		for(int i = 0; i< n_blocks * n_blocks; i++) {
 			screenData[i] = levelData[i];
+			System.out.println("Message5");
 		}
 		continueLevel();
 	}
@@ -193,6 +197,7 @@ public class GameLogic extends JPanel implements ActionListener{
 		req_dy = 0;
 
 		dying = false;
+		System.out.println("Message6");
 	}
 
 	//passers movement function
@@ -371,6 +376,7 @@ public class GameLogic extends JPanel implements ActionListener{
 		String start = "Press SPACE to start";                      // Text for the intro screen
 		g2d.setColor(Color.red);                                    // Color for the text
 		g2d.drawString(start, (screen_size)/4, 150);                // Positioning the text
+		System.out.println("Message7");
 	}
 
 	// Display of the score and lives 
@@ -379,6 +385,7 @@ public class GameLogic extends JPanel implements ActionListener{
 		g.setColor(new Color(5, 181, 79));
 		String s = "Score: " + score;
 		g.drawString(s, screen_size / 2 + 96, screen_size + 16);
+		System.out.println("Message8");
 
 		for (int i = 0; i < lives; i++) {                           // Display the number of hearts(lives)
 			g.drawImage(heart, i * 28 + 8, screen_size + 1, this);
@@ -413,7 +420,7 @@ public class GameLogic extends JPanel implements ActionListener{
 			if (currentSpeed < maxSpeed) {
 				currentSpeed++;
 			}
-
+			System.out.println("Message9");
 			initLevel();                                            // For now we restart the game when we completed delivering packages and just increase the number of passers and their speed
 		}
 	}
@@ -430,10 +437,49 @@ public class GameLogic extends JPanel implements ActionListener{
 		continueLevel();
 	}
 
+	private void playGame(Graphics2D g2d) {
+
+	    if(dying)
+	    {
+	        death();
+
+	    }else {
+
+	        moveCar();
+	        drawCar(g2d);
+	        movePassers(g2d);
+	        checkMaze();
+	        System.out.println("Message10");
+	    }
+	}
+	
+	//Putting the graphics together
+	public void paintcomponent(Graphics g)
+	{
+	    super.paintComponent(g);
+
+	    Graphics2D g2d = (Graphics2D) g;
+
+	    g2d.setColor(Color.black);
+	    g2d.fillRect(0, 0, d.width, d.height);
+
+	    drawMaze(g2d);
+	    drawScore(g2d);
+
+	    if (runGame) {
+	        playGame(g2d);
+	    } else {
+	        showIntroScreen(g2d);
+	    }
+	    Toolkit.getDefaultToolkit().sync();
+	    g2d.dispose();
+	    System.out.println("Message11");
+	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		// TODO Auto-generated method stub
+	  System.out.println("Message12");
+		repaint();
 
 	}
 }

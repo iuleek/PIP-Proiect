@@ -6,6 +6,7 @@ public class GameStart extends JFrame{
 	
 	 public GameStart() {
 		  add(new GameLogic());
+		  System.out.println("Message1");
 	  }
 
   public static void main(String[] args) {
