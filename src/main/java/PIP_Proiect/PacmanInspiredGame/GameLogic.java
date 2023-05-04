@@ -82,7 +82,7 @@ public class GameLogic extends JPanel implements ActionListener{
 
 	// Functions definition
 	private void loadImages() {
-		BufferedImage image = null;
+		
 		try {
 		    File up1 = new File("C:\\Users\\muste\\EclipseProjects\\pip1\\PIP-Proiect\\src\\main\\java\\images\\car_up.png");
 		    File left1 = new File("C:\\Users\\muste\\EclipseProjects\\pip1\\PIP-Proiect\\src\\main\\java\\images\\car_left.png");
@@ -124,7 +124,6 @@ public class GameLogic extends JPanel implements ActionListener{
 
 		timer = new Timer(40, this);             // Establishes how often the images are redraw
 		timer.start();
-		System.out.println("Message4");
 	}
 	
 	private void playGame(Graphics2D g2d) {
@@ -139,7 +138,6 @@ public class GameLogic extends JPanel implements ActionListener{
 	        drawCar(g2d);
 	        movePassers(g2d);
 	        checkMaze();
-	        System.out.println("Message10");
 	    }
 	}
 	
@@ -148,7 +146,6 @@ public class GameLogic extends JPanel implements ActionListener{
 		String start = "Press SPACE to start";                      // Text for the intro screen
 		g2d.setColor(Color.red);                                    // Color for the text
 		g2d.drawString(start, (screen_size)/4, 150);                // Positioning the text
-		System.out.println("Message7");
 	}
 	
 	// Display of the score and lives 
@@ -157,7 +154,6 @@ public class GameLogic extends JPanel implements ActionListener{
 		g.setColor(new Color(5, 181, 79));
 		String s = "Score: " + score;
 		g.drawString(s, screen_size / 2 + 96, screen_size + 16);
-		System.out.println("Message8");
 
 		for (int i = 0; i < lives; i++) {                           // Display the number of hearts(lives)
 			g.drawImage(heart, i * 28 + 8, screen_size + 1, this);
@@ -192,7 +188,6 @@ public class GameLogic extends JPanel implements ActionListener{
 			if (currentSpeed < maxSpeed) {
 				currentSpeed++;
 			}
-			System.out.println("Message9");
 			initLevel();                                            // For now we restart the game when we completed delivering packages and just increase the number of passers and their speed
 		}
 	}
@@ -210,79 +205,79 @@ public class GameLogic extends JPanel implements ActionListener{
 	}
 
 	//passers movement function
-		private void movePassers(Graphics2D g2d) {
-			int pos=0;
-			int count;
-
-			//setting the position of all 6 passers in block lines
-			for (int i = 0; i<n_passers; i++) {
-
-				// the passer move one square and the decides if want to change direction after finish moving in square
-				if(passer_x[i] % block_size == 0 && passer_y[i]%block_size == 0)
-					pos = passer_x[i]  / block_size + n_blocks * (int) (passer_y[i] / block_size);
-				count = 0;
-
-				//determining how the passer can move, the passer can't go through houses
-				if ((screenData[pos] & 1) == 0 && passer_dx[i] != 1) {
-					dx[count] = -1;
-					dy[count] = 0;
-					count++;
-				}
-
-				if ((screenData[pos] & 2) == 0 && passer_dy[i] != 1) {
-					dx[count] = 0;
-					dy[count] = -1;
-					count++;
-				}
-
-				if ((screenData[pos] & 4) == 0 && passer_dx[i] != -1) {
-					dx[count] = 1;
-					dy[count] = 0;
-					count++;
-				}
-
-				if ((screenData[pos] & 8) == 0 && passer_dy[i] != -1) {
-					dx[count] = 0;
-					dy[count] = 1;
-					count++;
-				}
-
-				//
-				if (count == 0) {
-					//determin where the passer is located in our sqare
-					if ((screenData[pos] & 16) == 16) {
-						passer_dx[i] = 0;
-						passer_dy[i] = 0;
-					} else {
-						passer_dx[i] = -passer_dx[i];
-						passer_dy[i] = -passer_dy[i];
-					}
-
-				} else {
-
-					count = (int) (Math.random() * count);
-
-					if (count > 3) {
-						count = 3;
-					}
-
-					passer_dx[i] = dx[count];
-					passer_dy[i] = dy[count];
-				}
 
 
-				passer_x[i] = passer_x[i] + (passer_dx[i] * passerSpeed[i]);
-				passer_y[i] = passer_y[i] + (passer_dy[i] * passerSpeed[i]);
-				drawPasser(g2d, passer_x[i] + 1, passer_y[i] + 1);
+    private void movePassers(Graphics2D g2d) {
 
-				if (car_x > (passer_x[i] - 12) && car_x < (passer_x[i] + 12)
-						&& car_y > (passer_y[i] - 12) && car_y < (passer_y[i] + 12)
-						&& runGame) {
+        int pos;
+        int count;
 
-					dying = true;
-				}
-			}
-		}
+        for (int i = 0; i < n_passers; i++) {
+            if (passer_x[i] % block_size == 0 && passer_y[i] % block_size == 0) {
+                pos = passer_x[i] / block_size + n_blocks* (int) (passer_y[i] / block_size);
+
+                count = 0;
+
+                if ((screenData[pos] & 1) == 0 && passer_dx[i] != 1) {
+                    dx[count] = -1;
+                    dy[count] = 0;
+                    count++;
+                }
+
+                if ((screenData[pos] & 2) == 0 && passer_dy[i] != 1) {
+                    dx[count] = 0;
+                    dy[count] = -1;
+                    count++;
+                }
+
+                if ((screenData[pos] & 4) == 0 && passer_dx[i] != -1) {
+                    dx[count] = 1;
+                    dy[count] = 0;
+                    count++;
+                }
+
+                if ((screenData[pos] & 8) == 0 && passer_dy[i] != -1) {
+                    dx[count] = 0;
+                    dy[count] = 1;
+                    count++;
+                }
+
+                if (count == 0) {
+
+                    if ((screenData[pos] & 16) == 16) {
+                    	passer_dx[i] = 0;
+                    	passer_dy[i] = 0;
+                    } else {
+                    	passer_dx[i] = -passer_dx[i];
+                    	passer_dy[i] = -passer_dy[i];
+                    }
+
+                } else {
+
+                    count = (int) (Math.random() * count);
+
+                    if (count > 3) {
+                        count = 3;
+                    }
+
+                    passer_dx[i] = dx[count];
+                    passer_dy[i] = dy[count];
+                }
+
+            }
+
+            passer_x[i] = passer_x[i] + (passer_dx[i] * passerSpeed[i]);
+            passer_y[i] = passer_y[i] + (passer_dy[i] * passerSpeed[i]);
+            drawPasser(g2d, passer_x[i] + 1, passer_y[i] + 1);
+
+            if (car_x > (passer_x[i] - 12) && car_x < (passer_x[i] + 12)
+                    && car_y > (passer_y[i] - 12) && car_y < (passer_y[i] + 12)
+                    && runGame) {
+
+                dying = true;
+            }
+        }
+    }
 
 	private void drawPasser(Graphics2D g2d, int x, int y) {
 		g2d.drawImage(passer, x, y, this);
@@ -384,7 +379,7 @@ public class GameLogic extends JPanel implements ActionListener{
 		lives = 3;
 		score = 0;
 		initLevel();
-		n_passers = 6;
+		n_passers = 3;
 		currentSpeed = 3;
 	}
 
@@ -393,7 +388,6 @@ public class GameLogic extends JPanel implements ActionListener{
 		for(int i = 0; i< n_blocks * n_blocks; i++) {
 			screenData[i] = levelData[i];
 		}
-		System.out.println("Message5");
 		continueLevel();
 	}
 
@@ -431,7 +425,6 @@ public class GameLogic extends JPanel implements ActionListener{
 		req_dy = 0;
 
 		dying = false;
-		System.out.println("Message6");
 	}
 
 	//Putting the graphics together
@@ -441,7 +434,7 @@ public class GameLogic extends JPanel implements ActionListener{
 
 		    Graphics2D g2d = (Graphics2D) g;
 
-		    g2d.setColor(Color.black);
+		    g2d.setColor(Color.gray);
 		    g2d.fillRect(0, 0, d.width, d.height);
 
 		    drawMaze(g2d);
@@ -454,7 +447,6 @@ public class GameLogic extends JPanel implements ActionListener{
 		    }
 		    Toolkit.getDefaultToolkit().sync();
 		    g2d.dispose();
-		    System.out.println("Message11");
 		}
 
 
@@ -505,7 +497,6 @@ public class GameLogic extends JPanel implements ActionListener{
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-	  System.out.println("Message12");
 		repaint();
 	}
 }

@@ -6,7 +6,6 @@ public class GameStart extends JFrame{
 	
 	 public GameStart() {
 		  add(new GameLogic());
-		  System.out.println("Message1");
 	  }
 
   public static void main(String[] args) {
@@ -16,7 +15,7 @@ public class GameStart extends JFrame{
 	 game.setVisible(true);
 	 game.setTitle("DeliveryDriver");
 	 game.setSize(380,420);
-	 game.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	 game.setDefaultCloseOperation(EXIT_ON_CLOSE);
 	 
 	 //End the window position in the middle of the screen
 	 game.setLocationRelativeTo(null);
