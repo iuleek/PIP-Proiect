@@ -23,7 +23,6 @@ public class GameLogic extends JPanel implements ActionListener{
 	private boolean dying = false;                                    // Player is alive or not
 	private boolean carrying = false;                                 // Variable that it's true if the car is not in delivering state(not carrying a package) and false otherwise
 
-
 	private final int block_size = 24;                                // How big blocks are in the game
 	private final int n_blocks = 15;                                  // Number of blocks - 15 width 15 height => 255 possible positions
 	private final int screen_size = block_size * n_blocks;            // 15*24 = 360
@@ -84,16 +83,16 @@ public class GameLogic extends JPanel implements ActionListener{
 	private void loadImages() {
 		BufferedImage image = null;
 		try {
-		    File up1 = new File("C:\\Users\\muste\\EclipseProjects\\pip1\\PIP-Proiect\\src\\main\\java\\images\\car_up.png");
-		    File left1 = new File("C:\\Users\\muste\\EclipseProjects\\pip1\\PIP-Proiect\\src\\main\\java\\images\\car_left.png");
-		    File right1 = new File("C:\\Users\\muste\\EclipseProjects\\pip1\\PIP-Proiect\\src\\main\\java\\images\\car_right.png");
-		    File passer1 = new File("C:\\Users\\muste\\EclipseProjects\\pip1\\PIP-Proiect\\src\\main\\java\\images\\p_front.png");
-		    File down1 = new File("C:\\Users\\muste\\EclipseProjects\\pip1\\PIP-Proiect\\src\\main\\java\\images\\car_down.png");
+		    File up1 = new File("D:\\AC facultate\\anu 3 sem 2\\PIP-pr\\Proiect-final\\PIP-Proiect\\src\\main\\java\\images\\car_up.png");
+		    File left1 = new File("D:\\AC facultate\\anu 3 sem 2\\PIP-pr\\Proiect-final\\PIP-Proiect\\src\\main\\java\\images\\car_left.png");
+		    File right1 = new File("D:\\AC facultate\\anu 3 sem 2\\PIP-pr\\Proiect-final\\PIP-Proiect\\src\\main\\java\\images\\car_right.png");
+		    File passer1 = new File("D:\\AC facultate\\anu 3 sem 2\\PIP-pr\\Proiect-final\\PIP-Proiect\\src\\main\\java\\images\\p_front.png");
+		    File down1 = new File("D:\\AC facultate\\anu 3 sem 2\\PIP-pr\\Proiect-final\\PIP-Proiect\\src\\main\\java\\images\\car_down.png");
 		    
-		    File pack1 = new File("C:\\Users\\muste\\EclipseProjects\\pip1\\PIP-Proiect\\src\\main\\java\\images\\pack.png");
-		    File house1 = new File("C:\\Users\\muste\\EclipseProjects\\pip1\\PIP-Proiect\\src\\main\\java\\images\\house1.png");
-		    File road1 = new File("C:\\Users\\muste\\EclipseProjects\\pip1\\PIP-Proiect\\src\\main\\java\\images\\road.png");
-		    File grass1 = new File("C:\\Users\\muste\\EclipseProjects\\pip1\\PIP-Proiect\\src\\main\\java\\images\\grass.png");
+		    File pack1 = new File("D:\\AC facultate\\anu 3 sem 2\\PIP-pr\\Proiect-final\\PIP-Proiect\\src\\main\\java\\images\\pack.png");
+		    File house1 = new File("D:\\AC facultate\\anu 3 sem 2\\PIP-pr\\Proiect-final\\PIP-Proiect\\src\\main\\java\\images\\house1.png");
+		    File road1 = new File("D:\\AC facultate\\anu 3 sem 2\\PIP-pr\\Proiect-final\\PIP-Proiect\\src\\main\\java\\images\\road.png");
+		    File grass1 = new File("D:\\AC facultate\\anu 3 sem 2\\PIP-pr\\Proiect-final\\PIP-Proiect\\src\\main\\java\\images\\grass.png");
 		    
 		    up = ImageIO.read(up1);
 		    down = ImageIO.read(down1);
@@ -137,9 +136,9 @@ public class GameLogic extends JPanel implements ActionListener{
 
 	        moveCar();
 	        drawCar(g2d);
-	        movePassers(g2d);
+	        //movePassers(g2d);
 	        checkMaze();
-	        System.out.println("Message10");
+
 	    }
 	}
 	
@@ -148,7 +147,7 @@ public class GameLogic extends JPanel implements ActionListener{
 		String start = "Press SPACE to start";                      // Text for the intro screen
 		g2d.setColor(Color.red);                                    // Color for the text
 		g2d.drawString(start, (screen_size)/4, 150);                // Positioning the text
-		System.out.println("Message7");
+
 	}
 	
 	// Display of the score and lives 
@@ -157,7 +156,7 @@ public class GameLogic extends JPanel implements ActionListener{
 		g.setColor(new Color(5, 181, 79));
 		String s = "Score: " + score;
 		g.drawString(s, screen_size / 2 + 96, screen_size + 16);
-		System.out.println("Message8");
+
 
 		for (int i = 0; i < lives; i++) {                           // Display the number of hearts(lives)
 			g.drawImage(heart, i * 28 + 8, screen_size + 1, this);
@@ -192,7 +191,7 @@ public class GameLogic extends JPanel implements ActionListener{
 			if (currentSpeed < maxSpeed) {
 				currentSpeed++;
 			}
-			System.out.println("Message9");
+
 			initLevel();                                            // For now we restart the game when we completed delivering packages and just increase the number of passers and their speed
 		}
 	}
@@ -301,8 +300,8 @@ public class GameLogic extends JPanel implements ActionListener{
 			/* If the car is on the block with a package, the package disappears */
 			if((ch & 64) != 0)
 			{
-				screenData[pos] = (short) (ch&16);
-				carrying = true;                                                   // The driver picked up the package and has to deliver it
+				levelData[pos] = (short)(ch&16);
+				carrying = true;                   // The driver picked up the package and has to deliver it
 			}
 
 			if(req_dx != 0 || req_dy != 0)
@@ -327,12 +326,9 @@ public class GameLogic extends JPanel implements ActionListener{
 
 			/*Checking for collisions with houses*/
 
-			if ((car_dx == 0 && car_dy == 1 && (ch & 8) != 0)
-					|| (car_dx == 0 && car_dy == -1 && (ch & 2) != 0)
-					|| (car_dx == 1 && car_dy == 0 && (ch & 4) != 0)
-					|| (car_dx == -1 && car_dy == 0 && (ch & 1) != 0)) {
-				car_dx = 0;
-				car_dy = 0;
+			if(req_dx == -1 && req_dy == 0 && (ch&32)!=0) {
+				req_dx = 0;
+				req_dy = 0;	
 			}
 		}
 
@@ -363,6 +359,7 @@ public class GameLogic extends JPanel implements ActionListener{
 	                || levelData[i] == 25 || levelData[i] == 28
 	                || levelData[i] == 20) {
 	            g2d.setColor(new Color (128, 128, 128));
+	            g2d.fillRect(x,y, 24,24);
 	        } else if (levelData[i] == 32 || levelData[i] == 41 || levelData[i] == 40
 	                || levelData[i] == 33 || levelData[i] == 37
 	                || levelData[i] == 34 || levelData[i] == 35
@@ -371,7 +368,8 @@ public class GameLogic extends JPanel implements ActionListener{
 	                || levelData[i] == 44) {
 	            g2d.drawImage(grass, x, y, this);
 	        } else if (levelData[i] == 80) {
-	            g2d.drawImage(pack, x, y, this);
+	        	g2d.setColor(Color.orange);
+	            g2d.fillRect(x,y, 22,22);
 	        }
 	    }
 	}
@@ -393,7 +391,7 @@ public class GameLogic extends JPanel implements ActionListener{
 		for(int i = 0; i< n_blocks * n_blocks; i++) {
 			screenData[i] = levelData[i];
 		}
-		System.out.println("Message5");
+
 		continueLevel();
 	}
 
@@ -431,7 +429,7 @@ public class GameLogic extends JPanel implements ActionListener{
 		req_dy = 0;
 
 		dying = false;
-		System.out.println("Message6");
+
 	}
 
 	//Putting the graphics together
@@ -454,7 +452,7 @@ public class GameLogic extends JPanel implements ActionListener{
 		    }
 		    Toolkit.getDefaultToolkit().sync();
 		    g2d.dispose();
-		    System.out.println("Message11");
+
 		}
 
 
@@ -505,7 +503,7 @@ public class GameLogic extends JPanel implements ActionListener{
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-	  System.out.println("Message12");
+
 		repaint();
 	}
 }
