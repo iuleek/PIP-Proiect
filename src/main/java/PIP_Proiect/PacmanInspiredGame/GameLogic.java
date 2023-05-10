@@ -43,7 +43,7 @@ public class GameLogic extends JPanel implements ActionListener{
 
 	
 	// 0 - house obstacle; 1- left border; 2 - top border; 4 - right border
-	// 8 - bottom border; 16 - road; 32 - grass; 64 - package
+	// 8 - bottom border; 16 - road; 32 - grass; 64 - package; 128 - delivery point
 	private final short levelData[] = {
 			19, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 38,  0,  0,
 			17, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 36,  0,  0,
@@ -58,7 +58,7 @@ public class GameLogic extends JPanel implements ActionListener{
 			41, 40, 32, 40, 40, 32, 40, 40, 32, 16, 16, 16, 32, 40, 44,
 			0,   0, 37,  0,  0, 37,  0,  0, 33, 16, 16, 16, 36,  0,  0,
 			0,   0, 37,  0,  0, 37,  0,  0, 33, 16, 16, 16, 36,  0,  0,
-			35, 34, 32, 34, 34, 32, 34, 34, 32, 16, 16, 16, 32, 34, 38,
+			35, 34, 32, 34, 34, 32, 34, 34, 32, 16, 16, 144, 32, 34, 38,
 			25, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 28,
 	};
 	
@@ -79,9 +79,8 @@ public class GameLogic extends JPanel implements ActionListener{
 		initGame();                         // Function - Starts the game
 	}
 
-	// Functions definition
+	// Loading the images used in the game
 	private void loadImages() {
-		BufferedImage image = null;
 		try {
 		    File up1 = new File("D:\\AC facultate\\anu 3 sem 2\\PIP-pr\\Proiect-final\\PIP-Proiect\\src\\main\\java\\images\\car_up.png");
 		    File left1 = new File("D:\\AC facultate\\anu 3 sem 2\\PIP-pr\\Proiect-final\\PIP-Proiect\\src\\main\\java\\images\\car_left.png");
@@ -92,7 +91,7 @@ public class GameLogic extends JPanel implements ActionListener{
 		    File pack1 = new File("D:\\AC facultate\\anu 3 sem 2\\PIP-pr\\Proiect-final\\PIP-Proiect\\src\\main\\java\\images\\pack.png");
 		    File house1 = new File("D:\\AC facultate\\anu 3 sem 2\\PIP-pr\\Proiect-final\\PIP-Proiect\\src\\main\\java\\images\\house1.png");
 		    File road1 = new File("D:\\AC facultate\\anu 3 sem 2\\PIP-pr\\Proiect-final\\PIP-Proiect\\src\\main\\java\\images\\road.png");
-		    File grass1 = new File("D:\\AC facultate\\anu 3 sem 2\\PIP-pr\\Proiect-final\\PIP-Proiect\\src\\main\\java\\images\\grass.png");
+		    File grass1 = new File("D:\\AC facultate\\anu 3 sem 2\\PIP-pr\\Proiect-final\\PIP-Proiect\\src\\main\\java\\images\\grass1.png");
 		    
 		    up = ImageIO.read(up1);
 		    down = ImageIO.read(down1);
@@ -123,8 +122,25 @@ public class GameLogic extends JPanel implements ActionListener{
 
 		timer = new Timer(40, this);             // Establishes how often the images are redraw
 		timer.start();
-		System.out.println("Message4");
 	}
+	
+	private void initGame() {
+		lives = 3;
+		score = 0;
+		initLevel();
+		n_passers = 6;
+		currentSpeed = 3;
+	}
+
+	private void initLevel() {
+		// To initialize level we copy the playfield from levelData to new array screenData
+		for(int i = 0; i< n_blocks * n_blocks; i++) {
+			screenData[i] = levelData[i];
+		}
+
+		continueLevel();
+	}
+
 	
 	private void playGame(Graphics2D g2d) {
 
@@ -141,6 +157,42 @@ public class GameLogic extends JPanel implements ActionListener{
 
 	    }
 	}
+	
+	private void drawMaze(Graphics2D g2d) {
+	    for (int i = 0; i < levelData.length; i++) {
+	        int x = (i % n_blocks) * block_size;
+	        int y = (i / n_blocks) * block_size;
+
+	        if (levelData[i] == 0) {
+	        	g2d.setColor(new Color(92, 64, 51));
+	        	g2d.fillRect(x,y, 24,24);
+	            g2d.drawImage(house, x, y, this);
+	        } else if (levelData[i] == 19 || levelData[i] == 18 || levelData[i] == 17
+	                || levelData[i] == 16 || levelData[i] == 24
+	                || levelData[i] == 25 || levelData[i] == 28
+	                || levelData[i] == 20) {
+	            g2d.setColor(new Color (128, 128, 128));
+	            g2d.fillRect(x,y, 24,24);
+	        } else if (levelData[i] == 32 || levelData[i] == 41 || levelData[i] == 40
+	                || levelData[i] == 33 || levelData[i] == 37
+	                || levelData[i] == 34 || levelData[i] == 35
+	                || levelData[i] == 38 || levelData[i] == 36
+	                || levelData[i] == 42 || levelData[i] == 46
+	                || levelData[i] == 44) {
+	        	g2d.setColor(new Color(0, 128, 0));
+	        	g2d.fillRect(x,y, 24,24);
+	            g2d.drawImage(grass, x, y, this);
+	        } else if (levelData[i] == 80) {
+	        	g2d.setColor(Color.gray);
+	            g2d.fillRect(x,y, 24,24);
+	            g2d.drawImage(pack, x, y, this);
+	        }else if(levelData[i] == 128){
+	        	g2d.setColor(Color.green);
+	            g2d.fillRect(x,y, 24,24);
+	        }
+	    }
+	}
+
 	
 	// The intro screen for the game - first thing the player sees
 	private void showIntroScreen(Graphics2D g2d) {
@@ -162,6 +214,28 @@ public class GameLogic extends JPanel implements ActionListener{
 			g.drawImage(heart, i * 28 + 8, screen_size + 1, this);
 		}
 	}
+	
+	//Drawing the car we are playing with
+	private void drawCar(Graphics2D g2d) {
+
+		if (req_dx == -1) {
+			g2d.drawImage(left, car_x + 1, car_y + 1, this);
+		} else if (req_dx == 1) {
+			g2d.drawImage(right, car_x + 1, car_y + 1, this);
+		} else if (req_dy == -1) {
+			g2d.drawImage(up, car_x + 1, car_y + 1, this);
+		} else {
+			g2d.drawImage(down, car_x + 1, car_y + 1, this);
+		}
+	}
+
+	
+	
+	//Drawing the passers that are obstacles
+	private void drawPasser(Graphics2D g2d, int x, int y) {
+		g2d.drawImage(passer, x, y, this);
+	}
+	
 	
 	// Checking if there are any packages left to deliver by our driver - 64 stands for the package existing
 	private void checkMaze() {
@@ -248,7 +322,7 @@ public class GameLogic extends JPanel implements ActionListener{
 
 				//
 				if (count == 0) {
-					//determin where the passer is located in our sqare
+					//determining where the passer is located in our square
 					if ((screenData[pos] & 16) == 16) {
 						passer_dx[i] = 0;
 						passer_dy[i] = 0;
@@ -283,9 +357,6 @@ public class GameLogic extends JPanel implements ActionListener{
 			}
 		}
 
-	private void drawPasser(Graphics2D g2d, int x, int y) {
-		g2d.drawImage(passer, x, y, this);
-	}
 	
 	/* The way that the car moves */ 
 	private void moveCar() {
@@ -302,6 +373,11 @@ public class GameLogic extends JPanel implements ActionListener{
 			{
 				levelData[pos] = (short)(ch&16);
 				carrying = true;                   // The driver picked up the package and has to deliver it
+			}
+			if((ch & 128) != 0 && carrying == true)
+			{
+				levelData[pos] = (short)(ch&16);
+				carrying = false;                   // The driver delivered the package
 			}
 
 			if(req_dx != 0 || req_dy != 0)
@@ -334,66 +410,6 @@ public class GameLogic extends JPanel implements ActionListener{
 
 	}
 
-	private void drawCar(Graphics2D g2d) {
-
-		if (req_dx == -1) {
-			g2d.drawImage(left, car_x + 1, car_y + 1, this);
-		} else if (req_dx == 1) {
-			g2d.drawImage(right, car_x + 1, car_y + 1, this);
-		} else if (req_dy == -1) {
-			g2d.drawImage(up, car_x + 1, car_y + 1, this);
-		} else {
-			g2d.drawImage(down, car_x + 1, car_y + 1, this);
-		}
-	}
-
-	private void drawMaze(Graphics2D g2d) {
-	    for (int i = 0; i < levelData.length; i++) {
-	        int x = (i % n_blocks) * block_size;
-	        int y = (i / n_blocks) * block_size;
-
-	        if (levelData[i] == 0) {
-	            g2d.drawImage(house, x, y, this);
-	        } else if (levelData[i] == 19 || levelData[i] == 18 || levelData[i] == 17
-	                || levelData[i] == 16 || levelData[i] == 24
-	                || levelData[i] == 25 || levelData[i] == 28
-	                || levelData[i] == 20) {
-	            g2d.setColor(new Color (128, 128, 128));
-	            g2d.fillRect(x,y, 24,24);
-	        } else if (levelData[i] == 32 || levelData[i] == 41 || levelData[i] == 40
-	                || levelData[i] == 33 || levelData[i] == 37
-	                || levelData[i] == 34 || levelData[i] == 35
-	                || levelData[i] == 38 || levelData[i] == 36
-	                || levelData[i] == 42 || levelData[i] == 46
-	                || levelData[i] == 44) {
-	            g2d.drawImage(grass, x, y, this);
-	        } else if (levelData[i] == 80) {
-	        	g2d.setColor(Color.orange);
-	            g2d.fillRect(x,y, 22,22);
-	        }
-	    }
-	}
-
-
-	
-
-
-	private void initGame() {
-		lives = 3;
-		score = 0;
-		initLevel();
-		n_passers = 6;
-		currentSpeed = 3;
-	}
-
-	private void initLevel() {
-		// To initialize level we copy the playfield from levelData to new array screenData
-		for(int i = 0; i< n_blocks * n_blocks; i++) {
-			screenData[i] = levelData[i];
-		}
-
-		continueLevel();
-	}
 
 	private void continueLevel() {
 
@@ -439,7 +455,7 @@ public class GameLogic extends JPanel implements ActionListener{
 
 		    Graphics2D g2d = (Graphics2D) g;
 
-		    g2d.setColor(Color.black);
+		    g2d.setColor(Color.darkGray);
 		    g2d.fillRect(0, 0, d.width, d.height);
 
 		    drawMaze(g2d);
@@ -504,6 +520,6 @@ public class GameLogic extends JPanel implements ActionListener{
 	@Override
 	public void actionPerformed(ActionEvent e) {
 
-		repaint();
+		repaint();  //calls the paint method
 	}
 }

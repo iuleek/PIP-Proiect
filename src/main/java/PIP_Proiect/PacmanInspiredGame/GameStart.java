@@ -6,7 +6,6 @@ public class GameStart extends JFrame{
 	
 	 public GameStart() {
 		  add(new GameLogic());
-
 	  }
 
   public static void main(String[] args) {
