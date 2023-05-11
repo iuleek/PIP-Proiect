@@ -154,7 +154,6 @@ public class GameLogic extends JPanel implements ActionListener{
 	        drawCar(g2d);
 	        //movePassers(g2d);
 	        checkMaze();
-
 	    }
 	}
 	
@@ -208,7 +207,6 @@ public class GameLogic extends JPanel implements ActionListener{
 		g.setColor(new Color(5, 181, 79));
 		String s = "Score: " + score;
 		g.drawString(s, screen_size / 2 + 96, screen_size + 16);
-
 
 		for (int i = 0; i < lives; i++) {                           // Display the number of hearts(lives)
 			g.drawImage(heart, i * 28 + 8, screen_size + 1, this);
@@ -342,20 +340,9 @@ public class GameLogic extends JPanel implements ActionListener{
 					passer_dx[i] = dx[count];
 					passer_dy[i] = dy[count];
 				}
-
-
-				passer_x[i] = passer_x[i] + (passer_dx[i] * passerSpeed[i]);
-				passer_y[i] = passer_y[i] + (passer_dy[i] * passerSpeed[i]);
-				drawPasser(g2d, passer_x[i] + 1, passer_y[i] + 1);
-
-				if (car_x > (passer_x[i] - 12) && car_x < (passer_x[i] + 12)
-						&& car_y > (passer_y[i] - 12) && car_y < (passer_y[i] + 12)
-						&& runGame) {
-
-					dying = true;
-				}
 			}
 		}
+
 
 	
 	/* The way that the car moves */ 
@@ -411,6 +398,7 @@ public class GameLogic extends JPanel implements ActionListener{
 	}
 
 
+
 	private void continueLevel() {
 
 		int dy = 1;
@@ -445,17 +433,14 @@ public class GameLogic extends JPanel implements ActionListener{
 		req_dy = 0;
 
 		dying = false;
-
 	}
 
 	//Putting the graphics together
 		public void paint(Graphics g)
 		{
 		    super.paintComponent(g);
-
 		    Graphics2D g2d = (Graphics2D) g;
-
-		    g2d.setColor(Color.darkGray);
+		    g2d.setColor(Color.gray);
 		    g2d.fillRect(0, 0, d.width, d.height);
 
 		    drawMaze(g2d);
@@ -519,7 +504,7 @@ public class GameLogic extends JPanel implements ActionListener{
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-
+		
 		repaint();  //calls the paint method
 	}
 }
