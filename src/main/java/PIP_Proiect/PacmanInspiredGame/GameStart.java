@@ -14,7 +14,7 @@ public class GameStart extends JFrame{
 	 
 	 game.setVisible(true);
 	 game.setTitle("DeliveryDriver");
-	 game.setSize(380,420);
+	 game.setSize(370,420);
 	 game.setDefaultCloseOperation(EXIT_ON_CLOSE);
 	 
 	 //End the window position in the middle of the screen
