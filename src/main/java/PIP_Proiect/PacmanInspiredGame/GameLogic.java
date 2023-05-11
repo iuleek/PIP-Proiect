@@ -83,16 +83,16 @@ public class GameLogic extends JPanel implements ActionListener{
 	// Loading the images used in the game
 	private void loadImages() {
 		try {
-		    File up1 = new File("D:\\AC facultate\\anu 3 sem 2\\PIP-pr\\Proiect-final\\PIP-Proiect\\src\\main\\java\\images\\car_up.png");
-		    File left1 = new File("D:\\AC facultate\\anu 3 sem 2\\PIP-pr\\Proiect-final\\PIP-Proiect\\src\\main\\java\\images\\car_left.png");
-		    File right1 = new File("D:\\AC facultate\\anu 3 sem 2\\PIP-pr\\Proiect-final\\PIP-Proiect\\src\\main\\java\\images\\car_right.png");
-		    File passer1 = new File("D:\\AC facultate\\anu 3 sem 2\\PIP-pr\\Proiect-final\\PIP-Proiect\\src\\main\\java\\images\\p_front.png");
-		    File down1 = new File("D:\\AC facultate\\anu 3 sem 2\\PIP-pr\\Proiect-final\\PIP-Proiect\\src\\main\\java\\images\\car_down.png");
-		    File heart = new File("D:\\AC facultate\\anu 3 sem 2\\PIP-pr\\Proiect-final\\PIP-Proiect\\src\\main\\java\\images\\heart.png");
-		    File pack1 = new File("D:\\AC facultate\\anu 3 sem 2\\PIP-pr\\Proiect-final\\PIP-Proiect\\src\\main\\java\\images\\pack.png");
-		    File house1 = new File("D:\\AC facultate\\anu 3 sem 2\\PIP-pr\\Proiect-final\\PIP-Proiect\\src\\main\\java\\images\\house1.png");
-		    File road1 = new File("D:\\AC facultate\\anu 3 sem 2\\PIP-pr\\Proiect-final\\PIP-Proiect\\src\\main\\java\\images\\road.png");
-		    File grass1 = new File("D:\\AC facultate\\anu 3 sem 2\\PIP-pr\\Proiect-final\\PIP-Proiect\\src\\main\\java\\images\\grass1.png");
+		    File up1 = new File("C:\\Iulik\\EclipseNew\\Workspace\\PacmanInspiredGame\\src\\main\\java\\images\\car_up.png");
+		    File left1 = new File("C:\\Iulik\\EclipseNew\\Workspace\\PacmanInspiredGame\\src\\main\\java\\images\\car_left.png");
+		    File right1 = new File("C:\\Iulik\\EclipseNew\\Workspace\\PacmanInspiredGame\\src\\main\\java\\images\\car_right.png");
+		    File passer1 = new File("C:\\Iulik\\EclipseNew\\Workspace\\PacmanInspiredGame\\src\\main\\java\\images\\p_front.png");
+		    File down1 = new File("C:\\Iulik\\EclipseNew\\Workspace\\PacmanInspiredGame\\src\\main\\java\\images\\car_down.png");
+		    File heart1 = new File("C:\\Iulik\\EclipseNew\\Workspace\\PacmanInspiredGame\\src\\main\\java\\images\\heart.png");
+		    File pack1 = new File("C:\\Iulik\\EclipseNew\\Workspace\\PacmanInspiredGame\\src\\main\\java\\images\\pack.png");
+		    File house1 = new File("C:\\Iulik\\EclipseNew\\Workspace\\PacmanInspiredGame\\src\\main\\java\\images\\house1.png");
+		    File road1 = new File("C:\\Iulik\\EclipseNew\\Workspace\\PacmanInspiredGame\\src\\main\\java\\images\\road.png");
+		    File grass1 = new File("C:\\Iulik\\EclipseNew\\Workspace\\PacmanInspiredGame\\src\\main\\java\\images\\grass1.png");
 		    
 		    up = ImageIO.read(up1);
 		    down = ImageIO.read(down1);
@@ -103,6 +103,8 @@ public class GameLogic extends JPanel implements ActionListener{
 		    house = ImageIO.read(house1);
 		    road = ImageIO.read(road1);
 		    grass = ImageIO.read(grass1);
+		    heart = ImageIO.read(heart1);
+		    
 		} catch (Exception e) {
 		    System.out.println("Failed to load image");
 		    e.printStackTrace();
@@ -204,7 +206,7 @@ public class GameLogic extends JPanel implements ActionListener{
 	
 	// Display of the score and lives 
 	private void drawScore(Graphics2D g) {
-		g.setFont(smallFont);
+	    g.setFont(smallFont);
 		g.setColor(new Color(221,160,221));
 		String s = "Score: " + score;
 		g.drawString(s, screen_size / 2 + 96, screen_size + 16);
@@ -467,7 +469,7 @@ public class GameLogic extends JPanel implements ActionListener{
 		{
 		    super.paintComponent(g);
 		    Graphics2D g2d = (Graphics2D) g;
-		    g2d.setColor(Color.gray);
+		    g2d.setColor(new Color(55,60,65));
 		    g2d.fillRect(0, 0, d.width, d.height);
 
 		    drawMaze(g2d);
