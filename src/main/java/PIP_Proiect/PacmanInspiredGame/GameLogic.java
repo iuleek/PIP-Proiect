@@ -22,7 +22,8 @@ public class GameLogic extends JPanel implements ActionListener{
 
 	private boolean dying = false;                                    // Player is alive or not
 	private boolean carrying = false;                                 // Variable that it's true if the car is not in delivering state(not carrying a package) and false otherwise
-
+	private boolean display = false;								  // All packages delivered => message displayed
+	
 	private final int block_size = 24;                                // How big blocks are in the game
 	private final int n_blocks = 15;                                  // Number of blocks - 15 width 15 height => 255 possible positions
 	private final int screen_size = block_size * n_blocks;            // 15*24 = 360
@@ -87,7 +88,7 @@ public class GameLogic extends JPanel implements ActionListener{
 		    File right1 = new File("D:\\AC facultate\\anu 3 sem 2\\PIP-pr\\Proiect-final\\PIP-Proiect\\src\\main\\java\\images\\car_right.png");
 		    File passer1 = new File("D:\\AC facultate\\anu 3 sem 2\\PIP-pr\\Proiect-final\\PIP-Proiect\\src\\main\\java\\images\\p_front.png");
 		    File down1 = new File("D:\\AC facultate\\anu 3 sem 2\\PIP-pr\\Proiect-final\\PIP-Proiect\\src\\main\\java\\images\\car_down.png");
-		    
+		    File heart = new File("D:\\AC facultate\\anu 3 sem 2\\PIP-pr\\Proiect-final\\PIP-Proiect\\src\\main\\java\\images\\heart.png");
 		    File pack1 = new File("D:\\AC facultate\\anu 3 sem 2\\PIP-pr\\Proiect-final\\PIP-Proiect\\src\\main\\java\\images\\pack.png");
 		    File house1 = new File("D:\\AC facultate\\anu 3 sem 2\\PIP-pr\\Proiect-final\\PIP-Proiect\\src\\main\\java\\images\\house1.png");
 		    File road1 = new File("D:\\AC facultate\\anu 3 sem 2\\PIP-pr\\Proiect-final\\PIP-Proiect\\src\\main\\java\\images\\road.png");
@@ -152,7 +153,7 @@ public class GameLogic extends JPanel implements ActionListener{
 
 	        moveCar();
 	        drawCar(g2d);
-	        //movePassers(g2d);
+	        movePassers(g2d);
 	        checkMaze();
 	    }
 	}
@@ -185,8 +186,8 @@ public class GameLogic extends JPanel implements ActionListener{
 	        	g2d.setColor(Color.gray);
 	            g2d.fillRect(x,y, 24,24);
 	            g2d.drawImage(pack, x, y, this);
-	        }else if(levelData[i] == 128){
-	        	g2d.setColor(Color.green);
+	        }else if(levelData[i] == 144){
+	        	g2d.setColor(new Color(221,160,221));
 	            g2d.fillRect(x,y, 24,24);
 	        }
 	    }
@@ -196,20 +197,25 @@ public class GameLogic extends JPanel implements ActionListener{
 	// The intro screen for the game - first thing the player sees
 	private void showIntroScreen(Graphics2D g2d) {
 		String start = "Press SPACE to start";                      // Text for the intro screen
-		g2d.setColor(Color.red);                                    // Color for the text
-		g2d.drawString(start, (screen_size)/4, 150);                // Positioning the text
+		g2d.setColor(Color.pink);                                    // Color for the text
+		g2d.drawString(start, (screen_size)/4, 40);                // Positioning the text
 
 	}
 	
 	// Display of the score and lives 
 	private void drawScore(Graphics2D g) {
 		g.setFont(smallFont);
-		g.setColor(new Color(5, 181, 79));
+		g.setColor(new Color(221,160,221));
 		String s = "Score: " + score;
 		g.drawString(s, screen_size / 2 + 96, screen_size + 16);
 
 		for (int i = 0; i < lives; i++) {                           // Display the number of hearts(lives)
 			g.drawImage(heart, i * 28 + 8, screen_size + 1, this);
+		}
+		if(display == true) {
+			String delivered = "All packages delivered!";                      // Text for the intro screen
+			g.setColor(Color.pink);                                    // Color for the text
+			g.drawString(delivered, (screen_size)/2 - 160, screen_size + 16);                // Positioning the text
 		}
 	}
 	
@@ -279,69 +285,86 @@ public class GameLogic extends JPanel implements ActionListener{
 
 		continueLevel();
 	}
+	
+	
 
 	//passers movement function
-		private void movePassers(Graphics2D g2d) {
-			int pos=0;
-			int count;
+	private void movePassers(Graphics2D g2d) {
 
-			//setting the position of all 6 passers in block lines
-			for (int i = 0; i<n_passers; i++) {
+        int pos;
+        int count;
 
-				// the passer move one square and the decides if want to change direction after finish moving in square
-				if(passer_x[i] % block_size == 0 && passer_y[i]%block_size == 0)
-					pos = passer_x[i]  / block_size + n_blocks * (int) (passer_y[i] / block_size);
-				count = 0;
+      //setting the position of all 6 passers in block lines
+        for (int i = 0; i < n_passers; i++) {
+        	// the passer move one square and the decides if want to change direction after finish moving in square
+            if (passer_x[i] % block_size == 0 && passer_y[i] % block_size == 0) {
+                pos = passer_x[i] / block_size + n_blocks * (int) (passer_y[i] / block_size);
 
-				//determining how the passer can move, the passer can't go through houses
-				if ((screenData[pos] & 1) == 0 && passer_dx[i] != 1) {
-					dx[count] = -1;
-					dy[count] = 0;
-					count++;
-				}
+                count = 0;
 
-				if ((screenData[pos] & 2) == 0 && passer_dy[i] != 1) {
-					dx[count] = 0;
-					dy[count] = -1;
-					count++;
-				}
+              //determining how the passer can move, the passer can't go through houses
+                if ((screenData[pos] & 1) == 0 && passer_dx[i] != 1) {
+                    dx[count] = -1;
+                    dy[count] = 0;
+                    count++;
+                }
 
-				if ((screenData[pos] & 4) == 0 && passer_dx[i] != -1) {
-					dx[count] = 1;
-					dy[count] = 0;
-					count++;
-				}
+                if ((screenData[pos] & 2) == 0 && passer_dy[i] != 1) {
+                    dx[count] = 0;
+                    dy[count] = -1;
+                    count++;
+                }
 
-				if ((screenData[pos] & 8) == 0 && passer_dy[i] != -1) {
-					dx[count] = 0;
-					dy[count] = 1;
-					count++;
-				}
+                if ((screenData[pos] & 4) == 0 && passer_dx[i] != -1) {
+                    dx[count] = 1;
+                    dy[count] = 0;
+                    count++;
+                }
 
-				//
-				if (count == 0) {
-					//determining where the passer is located in our square
-					if ((screenData[pos] & 16) == 16) {
-						passer_dx[i] = 0;
-						passer_dy[i] = 0;
-					} else {
-						passer_dx[i] = -passer_dx[i];
-						passer_dy[i] = -passer_dy[i];
-					}
+                if ((screenData[pos] & 8) == 0 && passer_dy[i] != -1) {
+                    dx[count] = 0;
+                    dy[count] = 1;
+                    count++;
+                }
 
-				} else {
+              //determining where the passer is located in our square
+                if (count == 0) {
 
-					count = (int) (Math.random() * count);
+                    if ((screenData[pos] & 15) == 15) {
+                        passer_dx[i] = 0;
+                        passer_dy[i] = 0;
+                    } else {
+                        passer_dx[i] = -passer_dx[i];
+                        passer_dy[i] = -passer_dy[i];
+                    }
 
-					if (count > 3) {
-						count = 3;
-					}
+                } else {
 
-					passer_dx[i] = dx[count];
-					passer_dy[i] = dy[count];
-				}
-			}
-		}
+                    count = (int) (Math.random() * count);
+
+                    if (count > 3) {
+                        count = 3;
+                    }
+
+                    passer_dx[i] = dx[count];
+                    passer_dy[i] = dy[count];
+                }
+
+            }
+
+            passer_x[i] = passer_x[i] + (passer_dx[i] * passerSpeed[i]);
+            passer_y[i] = passer_y[i] + (passer_dy[i] * passerSpeed[i]);
+            drawPasser(g2d, passer_x[i] + 1, passer_y[i] + 1);
+
+            if (car_x > (passer_x[i] - 12) && car_x < (passer_x[i] + 12)
+                    &&  car_y > (passer_y[i] - 12) && car_y < (passer_y[i] + 12)
+                    && runGame) {
+
+                dying = true;
+            }
+        }
+    }
+
 
 
 	
@@ -365,6 +388,7 @@ public class GameLogic extends JPanel implements ActionListener{
 			{
 				levelData[pos] = (short)(ch&16);
 				carrying = false;                   // The driver delivered the package
+				display = true;
 			}
 
 			if(req_dx != 0 || req_dy != 0)
@@ -373,8 +397,8 @@ public class GameLogic extends JPanel implements ActionListener{
 						|| (req_dx == 1 && req_dy == 0 && (ch & 4) != 0) 
 						|| (req_dx == 0 && req_dy == -1 && (ch & 8) != 0) 
 						|| (req_dx == 0 && req_dy == 1 && (ch & 2) != 0))){
-					car_dx = req_dx;
-					car_dy = req_dy;
+					//car_dx = req_dx;
+					//car_dy = req_dy;
 				}
 			}
 			/*Checking for collisions with borders*/
@@ -382,16 +406,19 @@ public class GameLogic extends JPanel implements ActionListener{
 					|| req_dx == 1 && car_x >= n_blocks * block_size 
 					|| req_dy == -1 && car_y <= 0 
 					|| req_dy == 1 && car_y >= n_blocks * block_size ) {
-				car_dx = 0;
-				car_dy = 0;
+				//car_dx = 0;
+				//car_dy = 0;
 			}
 
 
 			/*Checking for collisions with houses*/
-
-			if(req_dx == -1 && req_dy == 0 && (ch&32)!=0) {
-				req_dx = 0;
-				req_dy = 0;	
+			if(((req_dx == -1 && req_dy == 0 && (ch & 1) !=0) 
+					|| (req_dx == 1 && req_dy == 0 && (ch & 4) != 0) 
+					|| (req_dx == 0 && req_dy == -1 && (ch & 8) != 0) 
+					|| (req_dx == 0 && req_dy == 1 && (ch & 2) != 0)))
+			 {
+				car_dx = 0;
+				car_dy = 0;	
 			}
 		}
 
@@ -500,6 +527,7 @@ public class GameLogic extends JPanel implements ActionListener{
 
 		}
 	}
+	
 
 
 	@Override
