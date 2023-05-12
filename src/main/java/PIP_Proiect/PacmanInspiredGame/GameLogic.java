@@ -69,6 +69,11 @@ public class GameLogic extends JPanel implements ActionListener{
     private int currentSpeed = 3;
     private short[] screenData;
     private Timer timer;
+    
+    //collisio var
+    private boolean shouldMoveCar = false;
+
+
 
 
 	// Constructor to call different functions
@@ -83,16 +88,16 @@ public class GameLogic extends JPanel implements ActionListener{
 	// Loading the images used in the game
 	private void loadImages() {
 		try {
-		    File up1 = new File("C:\\Iulik\\EclipseNew\\Workspace\\PacmanInspiredGame\\src\\main\\java\\images\\car_up.png");
-		    File left1 = new File("C:\\Iulik\\EclipseNew\\Workspace\\PacmanInspiredGame\\src\\main\\java\\images\\car_left.png");
-		    File right1 = new File("C:\\Iulik\\EclipseNew\\Workspace\\PacmanInspiredGame\\src\\main\\java\\images\\car_right.png");
-		    File passer1 = new File("C:\\Iulik\\EclipseNew\\Workspace\\PacmanInspiredGame\\src\\main\\java\\images\\p_front.png");
-		    File down1 = new File("C:\\Iulik\\EclipseNew\\Workspace\\PacmanInspiredGame\\src\\main\\java\\images\\car_down.png");
-		    File heart1 = new File("C:\\Iulik\\EclipseNew\\Workspace\\PacmanInspiredGame\\src\\main\\java\\images\\heart.png");
-		    File pack1 = new File("C:\\Iulik\\EclipseNew\\Workspace\\PacmanInspiredGame\\src\\main\\java\\images\\pack.png");
-		    File house1 = new File("C:\\Iulik\\EclipseNew\\Workspace\\PacmanInspiredGame\\src\\main\\java\\images\\house1.png");
-		    File road1 = new File("C:\\Iulik\\EclipseNew\\Workspace\\PacmanInspiredGame\\src\\main\\java\\images\\road.png");
-		    File grass1 = new File("C:\\Iulik\\EclipseNew\\Workspace\\PacmanInspiredGame\\src\\main\\java\\images\\grass1.png");
+		    File up1 = new File("C:\\Users\\muste\\EclipseProjects\\pip1\\PIP-Proiect\\src\\main\\java\\images\\car_up.png");
+		    File left1 = new File("C:\\Users\\muste\\EclipseProjects\\pip1\\PIP-Proiect\\src\\main\\java\\images\\car_left.png");
+		    File right1 = new File("C:\\Users\\muste\\EclipseProjects\\pip1\\PIP-Proiect\\src\\main\\java\\images\\car_right.png");
+		    File passer1 = new File("C:\\Users\\muste\\EclipseProjects\\pip1\\PIP-Proiect\\src\\main\\java\\images\\p_front.png");
+		    File down1 = new File("C:\\Users\\muste\\EclipseProjects\\pip1\\PIP-Proiect\\src\\main\\java\\images\\car_down.png");
+		    File heart1 = new File("C:\\Users\\muste\\EclipseProjects\\pip1\\PIP-Proiect\\src\\main\\java\\images\\heart.png");
+		    File pack1 = new File("C:\\Users\\muste\\EclipseProjects\\pip1\\PIP-Proiect\\src\\main\\java\\images\\pack.png");
+		    File house1 = new File("C:\\Users\\muste\\EclipseProjects\\pip1\\PIP-Proiect\\src\\main\\java\\images\\house1.png");
+		    File road1 = new File("C:\\Users\\muste\\EclipseProjects\\pip1\\PIP-Proiect\\src\\main\\java\\images\\road.png");
+		    File grass1 = new File("C:\\Users\\muste\\EclipseProjects\\pip1\\PIP-Proiect\\src\\main\\java\\images\\grass1.png");
 		    
 		    up = ImageIO.read(up1);
 		    down = ImageIO.read(down1);
@@ -369,62 +374,46 @@ public class GameLogic extends JPanel implements ActionListener{
 
 
 
-	
-	/* The way that the car moves */ 
+	/*The way that car moves*/
 	private void moveCar() {
-		int pos;
-		short ch;
+		//the newX and newY variables are initialize with the future positions of the car 
+		//based on req_x and req_y
+	    int newX = car_x + req_dx * block_size;
+	    int newY = car_y + req_dy * block_size;
 
-		if(car_x % block_size == 0 && car_y % block_size == 0) {
+	    // Check if newX and newY are not outside the walls
+	    if (newX >= 0 && newX < n_blocks * block_size && newY >= 0 && newY < n_blocks * block_size) {
+	        //newPos is the index in the map that correspond to the new position of the car
+	    	int newPos = newX / block_size + n_blocks * (newY / block_size);
 
-			pos = car_x / block_size + n_blocks * (int) (car_y / block_size);
-			ch = screenData[pos];
+	        // Check if the new position is not 0 (is not a house)
+	        if (levelData[newPos] != 0) {
+	            // The car positions are updated because the next position is not a house and the car can move 
+	            car_x = newX;
+	            car_y = newY;
 
-			/* If the car is on the block with a package, the package disappears */
-			if((ch & 64) != 0)
-			{
-				levelData[pos] = (short)(ch&16);
-				carrying = true;                   // The driver picked up the package and has to deliver it
-			}
-			if((ch & 128) != 0 && carrying == true)
-			{
-				levelData[pos] = (short)(ch&16);
-				carrying = false;                   // The driver delivered the package
-				display = true;
-			}
+	            /* If the car is on the block with a package, the package disappears */
+	            if ((screenData[newPos] & 64) != 0) {
+	                levelData[newPos] = (short) (screenData[newPos] & 16);
+	                carrying = true; // The driver picked up the package and has to deliver it
+	            }
+	            if ((screenData[newPos] & 128) != 0 && carrying) {
+	                levelData[newPos] = (short) (screenData[newPos] & 16);
+	                carrying = false; // The driver delivered the package
+	                display = true;
+	            }
 
-			if(req_dx != 0 || req_dy != 0)
-			{
-				if(!((req_dx == -1 && req_dy == 0 && (ch & 1) !=0) 
-						|| (req_dx == 1 && req_dy == 0 && (ch & 4) != 0) 
-						|| (req_dx == 0 && req_dy == -1 && (ch & 8) != 0) 
-						|| (req_dx == 0 && req_dy == 1 && (ch & 2) != 0))){
-					//car_dx = req_dx;
-					//car_dy = req_dy;
-				}
-			}
-			/*Checking for collisions with borders*/
-			if (req_dx == -1 && car_x <= 0 
-					|| req_dx == 1 && car_x >= n_blocks * block_size 
-					|| req_dy == -1 && car_y <= 0 
-					|| req_dy == 1 && car_y >= n_blocks * block_size ) {
-				//car_dx = 0;
-				//car_dy = 0;
-			}
-
-
-			/*Checking for collisions with houses*/
-			if(((req_dx == -1 && req_dy == 0 && (ch & 1) !=0) 
-					|| (req_dx == 1 && req_dy == 0 && (ch & 4) != 0) 
-					|| (req_dx == 0 && req_dy == -1 && (ch & 8) != 0) 
-					|| (req_dx == 0 && req_dy == 1 && (ch & 2) != 0)))
-			 {
-				car_dx = 0;
-				car_dy = 0;	
-			}
-		}
-
+	            // Update the scare's movement 
+	            //newPos in screenData is 1 because the car is on a new position
+	            //the currPos in screenData is 0 because is the previous position of the car an the car is not there anymore
+	            screenData[newPos] = 1;
+	            int currPos = car_x / block_size + n_blocks * (car_y / block_size);
+	            screenData[currPos] = 0;
+	        }
+	    }
 	}
+
+
 
 
 
@@ -490,46 +479,59 @@ public class GameLogic extends JPanel implements ActionListener{
 		 * SPACE - START 
 		 * ESC - EXIT GAME
 		 * ARROWS - MOVE */
-	class TAdapter extends KeyAdapter {
+		class TAdapter extends KeyAdapter {
 
-		@Override
-		public void keyPressed(KeyEvent e)
-		{
-			int key = e.getKeyCode();
+		    @Override
+		    public void keyPressed(KeyEvent e) {
+		        int key = e.getKeyCode();
 
-			if(runGame) {
-				if(key == KeyEvent.VK_LEFT) {
-					req_dx = -1;
-					req_dy = 0;
-				}
-				else if(key == KeyEvent.VK_RIGHT) {
-					req_dx = 1;
-					req_dy = 0;
-				}
-				else if(key == KeyEvent.VK_DOWN) {
-					req_dx = 0;
-					req_dy = 1;
-				}
-				else if(key == KeyEvent.VK_UP) {
-					req_dx = 0;
-					req_dy = -1;
-				}
-				else if(key == KeyEvent.VK_ESCAPE && timer.isRunning()) {
-					runGame = false;
-				}
-			}else {
-				if(key == KeyEvent.VK_SPACE) {
-					runGame = true;
-					initGame();
-				}
-			}
+		        if (runGame) {
+		            if (key == KeyEvent.VK_LEFT) {
+		                req_dx = -1;
+		                req_dy = 0;
+		            } else if (key == KeyEvent.VK_RIGHT) {
+		                req_dx = 1;
+		                req_dy = 0;
+		            } else if (key == KeyEvent.VK_DOWN) {
+		                req_dx = 0;
+		                req_dy = 1;
+		            } else if (key == KeyEvent.VK_UP) {
+		                req_dx = 0;
+		                req_dy = -1;
+		            } else if (key == KeyEvent.VK_ESCAPE && timer.isRunning()) {
+		                runGame = false;
+		            }
+		        } else {
+		            if (key == KeyEvent.VK_SPACE) {
+		                runGame = true;
+		                initGame();
+		            }
+		        }
+		    }
 
-			car_x += req_dx * block_size;
-			car_y += req_dy * block_size;
+		    @Override
+		    //I add this keyReleased function to make the car to not move continiously
+		    //Now it move square by square
+		    //If the kwy is released the car doesn't move anymore
+		    public void keyReleased(KeyEvent e) {
+		        int key = e.getKeyCode();
 
+		        if (runGame) {
+		            if (key == KeyEvent.VK_LEFT && req_dx == -1) {
+		                req_dx = 0;
+		            } else if (key == KeyEvent.VK_RIGHT && req_dx == 1) {
+		                req_dx = 0;
+		            } else if (key == KeyEvent.VK_DOWN && req_dy == 1) {
+		                req_dy = 0;
+		            } else if (key == KeyEvent.VK_UP && req_dy == -1) {
+		                req_dy = 0;
+		            }
+		        }
+		    }
 		}
-	}
-	
+
+
+		
 
 
 	@Override
