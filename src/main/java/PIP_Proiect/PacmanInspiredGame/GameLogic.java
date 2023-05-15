@@ -70,6 +70,11 @@ public class GameLogic extends JPanel implements ActionListener{
     private short[] screenData;
     private Timer timer;
     
+    //collisio var
+    private boolean shouldMoveCar = false;
+
+
+
 
 	// Constructor to call different functions
 	public GameLogic() {
