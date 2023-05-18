@@ -88,16 +88,16 @@ public class GameLogic extends JPanel implements ActionListener{
 	// Loading the images used in the game
 	private void loadImages() {
 		try {
-		    File up1 = new File("C:\\Users\\muste\\EclipseProjects\\pip1\\PIP-Proiect\\src\\main\\java\\images\\car_up.png");
-		    File left1 = new File("C:\\Users\\muste\\EclipseProjects\\pip1\\PIP-Proiect\\src\\main\\java\\images\\car_left.png");
-		    File right1 = new File("C:\\Users\\muste\\EclipseProjects\\pip1\\PIP-Proiect\\src\\main\\java\\images\\car_right.png");
-		    File passer1 = new File("C:\\Users\\muste\\EclipseProjects\\pip1\\PIP-Proiect\\src\\main\\java\\images\\p_front.png");
-		    File down1 = new File("C:\\Users\\muste\\EclipseProjects\\pip1\\PIP-Proiect\\src\\main\\java\\images\\car_down.png");
-		    File heart1 = new File("C:\\Users\\muste\\EclipseProjects\\pip1\\PIP-Proiect\\src\\main\\java\\images\\heart.png");
-		    File pack1 = new File("C:\\Users\\muste\\EclipseProjects\\pip1\\PIP-Proiect\\src\\main\\java\\images\\pack.png");
-		    File house1 = new File("C:\\Users\\muste\\EclipseProjects\\pip1\\PIP-Proiect\\src\\main\\java\\images\\house1.png");
-		    File road1 = new File("C:\\Users\\muste\\EclipseProjects\\pip1\\PIP-Proiect\\src\\main\\java\\images\\road.png");
-		    File grass1 = new File("C:\\Users\\muste\\EclipseProjects\\pip1\\PIP-Proiect\\src\\main\\java\\images\\grass1.png");
+		    File up1 = new File("D:\\AC facultate\\anu 3 sem 2\\PIP-pr\\Proiect-final\\PIP-Proiect\\src\\main\\java\\images\\car_up.png");
+		    File left1 = new File("D:\\AC facultate\\anu 3 sem 2\\PIP-pr\\Proiect-final\\PIP-Proiect\\src\\main\\java\\images\\car_left.png");
+		    File right1 = new File("D:\\AC facultate\\anu 3 sem 2\\PIP-pr\\Proiect-final\\PIP-Proiect\\src\\main\\java\\images\\car_right.png");
+		    File passer1 = new File("D:\\AC facultate\\anu 3 sem 2\\PIP-pr\\Proiect-final\\PIP-Proiect\\src\\main\\java\\images\\p_front.png");
+		    File down1 = new File("D:\\AC facultate\\anu 3 sem 2\\PIP-pr\\Proiect-final\\PIP-Proiect\\src\\main\\java\\images\\car_down.png");
+		    File heart1 = new File("D:\\AC facultate\\anu 3 sem 2\\PIP-pr\\Proiect-final\\PIP-Proiect\\src\\main\\java\\images\\heart.png");
+		    File pack1 = new File("D:\\AC facultate\\anu 3 sem 2\\PIP-pr\\Proiect-final\\PIP-Proiect\\src\\main\\java\\images\\pack.png");
+		    File house1 = new File("D:\\AC facultate\\anu 3 sem 2\\PIP-pr\\Proiect-final\\PIP-Proiect\\src\\main\\java\\images\\house1.png");
+		    File road1 = new File("D:\\AC facultate\\anu 3 sem 2\\PIP-pr\\Proiect-final\\PIP-Proiect\\src\\main\\java\\images\\road.png");
+		    File grass1 = new File("D:\\AC facultate\\anu 3 sem 2\\PIP-pr\\Proiect-final\\PIP-Proiect\\src\\main\\java\\images\\grass1.png");
 		    
 		    up = ImageIO.read(up1);
 		    down = ImageIO.read(down1);
@@ -222,7 +222,7 @@ public class GameLogic extends JPanel implements ActionListener{
 		if(display == true) {
 			String delivered = "All packages delivered!";                      // Text for the intro screen
 			g.setColor(Color.pink);                                    // Color for the text
-			g.drawString(delivered, (screen_size)/2 - 160, screen_size + 16);                // Positioning the text
+			g.drawString(delivered, (screen_size)/4, 40);                // Positioning the text
 		}
 	}
 	
