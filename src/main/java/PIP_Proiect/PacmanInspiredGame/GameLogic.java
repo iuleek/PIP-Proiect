@@ -17,35 +17,38 @@ import javax.imageio.ImageIO;
 public class GameLogic extends JPanel implements ActionListener{
   
     private Dimension d;                                              // Height and Width of the playing field
-	private final Font smallFont = new Font("Arial", Font.BOLD,14);   // To display Text in the game
-	private boolean runGame = false;                                  // State of the game - running/ not running
+	final Font smallFont = new Font("Arial", Font.BOLD,14);   // To display Text in the game
+	public boolean runGame = false;                                  // State of the game - running/ not running
 
-	private boolean dying = false;                                    // Player is alive or not
+	public boolean dying = false;                                    // Player is alive or not
 	private boolean carrying = false;                                 // Variable that it's true if the car is not in delivering state(not carrying a package) and false otherwise
-	private boolean display = false;								  // All packages delivered => message displayed
+	boolean display = false;								  // All packages delivered => message displayed
 	
-	private final int block_size = 24;                                // How big blocks are in the game
-	private final int n_blocks = 15;                                  // Number of blocks - 15 width 15 height => 255 possible positions
-	private final int screen_size = block_size * n_blocks;            // 15*24 = 360
+	public final int block_size = 24;                                // How big blocks are in the game
+	public final int n_blocks = 15;                                  // Number of blocks - 15 width 15 height => 255 possible positions
+	final int screen_size = block_size * n_blocks;            // 15*24 = 360
 	private final int max_passers = 12;                               // Maximum number of passers
 	private final int car_speed = 6;                                  // Speed of our car
 
-	private int n_passers = 3;                                        // Initial number of passers
-	private int lives, score;                                         // Variables for score and lives
+	int n_passers = 3;                                        // Initial number of passers
+	int lives;                                         // Variables for score and lives
+	int score;
 	private int [] dx, dy;                                            // Position of the passers
-	private int [] passer_x, passer_y, passer_dx, passer_dy, passerSpeed;          // To determine number and position of the passer
+	public int [] passer_x, passer_y, passer_dx, passer_dy, passerSpeed;          // To determine number and position of the passer
 
-	private Image heart, passer, pack;                                // Change the variables to passer1/passer2 if we have multiple
+	Image heart;                                // Change the variables to passer1/passer2 if we have multiple
+	private Image passer;
+	private Image pack;
 	private Image up, down, left, right;                              // Images of our car according to the movement
 	private Image house, grass, road;
 
-	private int car_x, car_y, car_dx, car_dy;                         // Car_x, car_y -> coordinates of the car; car_dx, car_dy -> horizontal and vertical directions
-	private int req_dx, req_dy;                                       // Determined in TAdapter class (extends KeyAdapter)
+	public int car_x, car_y, car_dx, car_dy;                         // Car_x, car_y -> coordinates of the car; car_dx, car_dy -> horizontal and vertical directions
+	public int req_dx, req_dy;                                       // Determined in TAdapter class (extends KeyAdapter)
 
 	
 	// 0 - house obstacle; 1- left border; 2 - top border; 4 - right border
 	// 8 - bottom border; 16 - road; 32 - grass; 64 - package; 128 - delivery point
-	private final short levelData[] = {
+	public final short levelData[] = {
 			19, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 38,  0,  0,
 			17, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 36,  0,  0,
 			17, 16, 16, 80, 16, 16, 16, 16, 16, 16, 16, 16, 32, 42, 46,
@@ -70,10 +73,8 @@ public class GameLogic extends JPanel implements ActionListener{
     private short[] screenData;
     private Timer timer;
     
-    //collisio var
+    //collision var
     private boolean shouldMoveCar = false;
-
-
 
 
 	// Constructor to call different functions
@@ -88,16 +89,16 @@ public class GameLogic extends JPanel implements ActionListener{
 	// Loading the images used in the game
 	private void loadImages() {
 		try {
-		    File up1 = new File("D:\\AC facultate\\anu 3 sem 2\\PIP-pr\\Proiect-final\\PIP-Proiect\\src\\main\\java\\images\\car_up.png");
-		    File left1 = new File("D:\\AC facultate\\anu 3 sem 2\\PIP-pr\\Proiect-final\\PIP-Proiect\\src\\main\\java\\images\\car_left.png");
-		    File right1 = new File("D:\\AC facultate\\anu 3 sem 2\\PIP-pr\\Proiect-final\\PIP-Proiect\\src\\main\\java\\images\\car_right.png");
-		    File passer1 = new File("D:\\AC facultate\\anu 3 sem 2\\PIP-pr\\Proiect-final\\PIP-Proiect\\src\\main\\java\\images\\p_front.png");
-		    File down1 = new File("D:\\AC facultate\\anu 3 sem 2\\PIP-pr\\Proiect-final\\PIP-Proiect\\src\\main\\java\\images\\car_down.png");
-		    File heart1 = new File("D:\\AC facultate\\anu 3 sem 2\\PIP-pr\\Proiect-final\\PIP-Proiect\\src\\main\\java\\images\\heart.png");
-		    File pack1 = new File("D:\\AC facultate\\anu 3 sem 2\\PIP-pr\\Proiect-final\\PIP-Proiect\\src\\main\\java\\images\\pack.png");
-		    File house1 = new File("D:\\AC facultate\\anu 3 sem 2\\PIP-pr\\Proiect-final\\PIP-Proiect\\src\\main\\java\\images\\house1.png");
-		    File road1 = new File("D:\\AC facultate\\anu 3 sem 2\\PIP-pr\\Proiect-final\\PIP-Proiect\\src\\main\\java\\images\\road.png");
-		    File grass1 = new File("D:\\AC facultate\\anu 3 sem 2\\PIP-pr\\Proiect-final\\PIP-Proiect\\src\\main\\java\\images\\grass1.png");
+		    File up1 = new File("C:\\Users\\prisa\\git\\PIP-Proiect\\src\\main\\java\\images\\car_up.png");
+		    File left1 = new File("C:\\Users\\prisa\\git\\PIP-Proiect\\src\\main\\java\\images\\car_left.png");
+		    File right1 = new File("C:\\Users\\prisa\\git\\PIP-Proiect\\src\\main\\java\\images\\car_right.png");
+		    File passer1 = new File("C:\\Users\\prisa\\git\\PIP-Proiect\\src\\main\\java\\images\\p_front.png");
+		    File down1 = new File("C:\\Users\\prisa\\git\\PIP-Proiect\\src\\main\\java\\images\\car_down.png");
+		    File heart1 = new File("C:\\Users\\prisa\\git\\PIP-Proiect\\src\\main\\java\\images\\heart.png");
+		    File pack1 = new File("C:\\Users\\prisa\\git\\PIP-Proiect\\src\\main\\java\\images\\pack.png");
+		    File house1 = new File("C:\\Users\\prisa\\git\\PIP-Proiect\\src\\main\\java\\images\\house1.png");
+		    File road1 = new File("C:\\Users\\prisa\\git\\PIP-Proiect\\src\\main\\java\\images\\road.png");
+		    File grass1 = new File("C:\\Users\\prisa\\git\\PIP-Proiect\\src\\main\\java\\images\\grass1.png");
 		    
 		    up = ImageIO.read(up1);
 		    down = ImageIO.read(down1);
@@ -115,7 +116,6 @@ public class GameLogic extends JPanel implements ActionListener{
 		    e.printStackTrace();
 		}
 	}
-
 
 	private void initVariables() {
 		screenData = new short[n_blocks * n_blocks];
@@ -145,10 +145,8 @@ public class GameLogic extends JPanel implements ActionListener{
 		for(int i = 0; i< n_blocks * n_blocks; i++) {
 			screenData[i] = levelData[i];
 		}
-
 		continueLevel();
 	}
-
 	
 	private void playGame(Graphics2D g2d) {
 
@@ -200,7 +198,6 @@ public class GameLogic extends JPanel implements ActionListener{
 	    }
 	}
 
-	
 	// The intro screen for the game - first thing the player sees
 	private void showIntroScreen(Graphics2D g2d) {
 		String start = "Press SPACE to start";                      // Text for the intro screen
@@ -210,7 +207,7 @@ public class GameLogic extends JPanel implements ActionListener{
 	}
 	
 	// Display of the score and lives 
-	private void drawScore(Graphics2D g) {
+	void drawScore(Graphics2D g) {
 	    g.setFont(smallFont);
 		g.setColor(new Color(221,160,221));
 		String s = "Score: " + score;
@@ -239,14 +236,12 @@ public class GameLogic extends JPanel implements ActionListener{
 			g2d.drawImage(down, car_x + 1, car_y + 1, this);
 		}
 	}
-
 	
 	
 	//Drawing the passers that are obstacles
 	private void drawPasser(Graphics2D g2d, int x, int y) {
 		g2d.drawImage(passer, x, y, this);
 	}
-	
 	
 	// Checking if there are any packages left to deliver by our driver - 64 stands for the package existing
 	private void checkMaze() {
@@ -282,7 +277,7 @@ public class GameLogic extends JPanel implements ActionListener{
 	}
 
 	// Establishing the number of lives and according to that either stop the game or continue
-	private void death() {
+	void death() {
 
 		lives--;
 
@@ -294,9 +289,8 @@ public class GameLogic extends JPanel implements ActionListener{
 	}
 	
 	
-
 	//passers movement function
-	private void movePassers(Graphics2D g2d) {
+	public void movePassers(Graphics2D g2d) {
 
         int pos;
         int count;
@@ -375,7 +369,7 @@ public class GameLogic extends JPanel implements ActionListener{
 
 
 	/*The way that car moves*/
-	private void moveCar() {
+	public void moveCar() {
 		//the newX and newY variables are initialize with the future positions of the car 
 		//based on req_x and req_y
 	    int newX = car_x + req_dx * block_size;
@@ -414,10 +408,7 @@ public class GameLogic extends JPanel implements ActionListener{
 	}
 
 
-
-
-
-	private void continueLevel() {
+	void continueLevel() {
 
 		int dy = 1;
 		int random;
@@ -530,13 +521,10 @@ public class GameLogic extends JPanel implements ActionListener{
 		    }
 		}
 
-
-		
-
-
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		
 		repaint();  //calls the paint method
 	}
+
 }
