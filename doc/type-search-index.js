@@ -1,0 +1,1 @@
+typeSearchIndex = [{"l":"All Classes and Interfaces","u":"allclasses-index.html"},{"p":"PIP_Proiect.PacmanInspiredGame","l":"GameLogic"},{"p":"PIP_Proiect.PacmanInspiredGame","l":"GameStart"},{"p":"PIP_Proiect.PacmanInspiredGame","l":"GameTest"},{"p":"PIP_Proiect.PacmanInspiredGame","l":"GameLogic.TAdapter"}];updateSearchResults();
