@@ -27,14 +27,14 @@ public class GameLogic extends JPanel implements ActionListener{
 	private final int block_size = 24;                                // How big blocks are in the game
 	private final int n_blocks = 15;                                  // Number of blocks - 15 width 15 height => 255 possible positions
 	private final int screen_size = block_size * n_blocks;            // 15*24 = 360
-	private final int max_passers = 12;                               // Maximum number of passers
-	private final int car_speed = 6;                                  // Speed of our car
+	private final int max_passers = 6;                               // Maximum number of passers
 
+	private int n_packages = 0;
 	private int n_passers = 3;                                        // Initial number of passers
 	private int lives, score;                                         // Variables for score and lives
 	private int [] dx, dy;                                            // Position of the passers
 	private int [] passer_x, passer_y, passer_dx, passer_dy, passerSpeed;          // To determine number and position of the passer
-
+	private int level = 1;
 	private Image heart, passer, pack;                                // Change the variables to passer1/passer2 if we have multiple
 	private Image up, down, left, right;                              // Images of our car according to the movement
 	private Image house, grass, road;
@@ -45,7 +45,7 @@ public class GameLogic extends JPanel implements ActionListener{
 	
 	// 0 - house obstacle; 1- left border; 2 - top border; 4 - right border
 	// 8 - bottom border; 16 - road; 32 - grass; 64 - package; 128 - delivery point
-	private final short levelData[] = {
+	private short levelData[] = {
 			19, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 38,  0,  0,
 			17, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 36,  0,  0,
 			17, 16, 16, 80, 16, 16, 16, 16, 16, 16, 16, 16, 32, 42, 46,
@@ -63,15 +63,31 @@ public class GameLogic extends JPanel implements ActionListener{
 			25, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 28,
 	};
 	
+	private short levelData2[] = {
+			19, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 38,  0,  0,
+			17, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 36,  0,  0,
+			17, 16, 16, 80, 16, 16, 16, 16, 16, 16, 80, 16, 32, 42, 46,
+			41, 40, 32, 40, 40, 32, 40, 40, 32, 16, 16, 16, 36,  0,  0,
+			0,   0, 37,   0, 0, 37,  0,  0, 33, 16, 16, 16, 36,  0,  0,
+			0,   0, 37,   0, 0, 37,  0,  0, 33, 16, 16, 16, 32, 34, 38,
+			35, 34, 32, 34, 34, 32, 34, 34, 32, 16, 16, 16, 32, 32, 36,
+			17, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 20,
+			17, 16, 16, 144, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 20,
+			17, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 20,
+			41, 40, 32, 40, 40, 32, 40, 40, 32, 16, 16, 16, 32, 40, 44,
+			0,   0, 37,  0,  0, 37,  0,  0, 33, 16, 16, 16, 36,  0,  0,
+			0,   0, 37,  0,  0, 37,  0,  0, 33, 16, 16, 16, 36,  0,  0,
+			35, 34, 32, 34, 34, 32, 34, 34, 32, 16, 16, 16, 32, 34, 38,
+			25, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 28,
+	};
+	
     private final int validSpeeds[] = {1, 2, 3, 4, 6, 8};
     private final int maxSpeed = 6;
 
     private int currentSpeed = 3;
     private short[] screenData;
     private Timer timer;
-    
-    //collisio var
-    private boolean shouldMoveCar = false;
+
 
 
 
@@ -269,15 +285,9 @@ public class GameLogic extends JPanel implements ActionListener{
 
 			score += 50;                                            // Increasing the score by 50
 
-			if (n_passers < max_passers) {
-				n_passers++;
-			}
-
-			if (currentSpeed < maxSpeed) {
-				currentSpeed++;
-			}
-
 			initLevel();                                            // For now we restart the game when we completed delivering packages and just increase the number of passers and their speed
+			allPackagesDelivered = false;
+			
 		}
 	}
 
@@ -304,6 +314,7 @@ public class GameLogic extends JPanel implements ActionListener{
       //setting the position of all 6 passers in block lines
         for (int i = 0; i < n_passers; i++) {
         	// the passer move one square and the decides if want to change direction after finish moving in square
+        	if (passer_x[i] >= 0 && passer_x[i] < n_blocks * block_size && passer_y[i] >= 0 && passer_y[i] < n_blocks * block_size) {
             if (passer_x[i] % block_size == 0 && passer_y[i] % block_size == 0) {
                 pos = passer_x[i] / block_size + n_blocks * (int) (passer_y[i] / block_size);
 
@@ -369,6 +380,7 @@ public class GameLogic extends JPanel implements ActionListener{
 
                 dying = true;
             }
+        	}
         }
     }
 
@@ -376,7 +388,7 @@ public class GameLogic extends JPanel implements ActionListener{
 
 	/*The way that car moves*/
 	private void moveCar() {
-		//the newX and newY variables are initialize with the future positions of the car 
+		//the newX and newY variables are initialized with the future position of the car 
 		//based on req_x and req_y
 	    int newX = car_x + req_dx * block_size;
 	    int newY = car_y + req_dy * block_size;
@@ -395,9 +407,10 @@ public class GameLogic extends JPanel implements ActionListener{
 	            /* If the car is on the block with a package, the package disappears */
 	            if ((screenData[newPos] & 64) != 0) {
 	                levelData[newPos] = (short) (screenData[newPos] & 16);
+	                n_packages++;
 	                carrying = true; // The driver picked up the package and has to deliver it
 	            }
-	            if ((screenData[newPos] & 128) != 0 && carrying) {
+	            if (((screenData[newPos] & 128) != 0 && carrying && level == 1) || ((screenData[newPos] & 128) != 0 && carrying && level == 2 && n_packages == 2)) {
 	                levelData[newPos] = (short) (screenData[newPos] & 16);
 	                carrying = false; // The driver delivered the package
 	                display = true;
@@ -421,6 +434,15 @@ public class GameLogic extends JPanel implements ActionListener{
 
 		int dy = 1;
 		int random;
+		
+		if(display == true) {
+			levelData = levelData2;
+			level = 2;
+			display = false;
+			n_packages = 0;
+			lives = 3;
+		}
+		
 
 		for(int i = 0; i < n_passers; i++) {
 
@@ -439,6 +461,7 @@ public class GameLogic extends JPanel implements ActionListener{
 			}
 
 			passerSpeed[i] = validSpeeds[random];
+			System.out.println(random + " " + i );
 		}
 
 		car_x = 10 * block_size;
@@ -510,9 +533,9 @@ public class GameLogic extends JPanel implements ActionListener{
 		    }
 
 		    @Override
-		    //I add this keyReleased function to make the car to not move continiously
-		    //Now it move square by square
-		    //If the kwy is released the car doesn't move anymore
+		    //I add this keyReleased function to make the car to not move continuously
+		    //Now it moves square by square
+		    //If the key is released the car doesn't move anymore
 		    public void keyReleased(KeyEvent e) {
 		        int key = e.getKeyCode();
 
