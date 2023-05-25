@@ -60,14 +60,14 @@ public class GameLogic extends JPanel implements ActionListener{
 	/** * To determine number and position of the passer */                                        
 	public int [] passer_x, passer_y, passer_dx, passer_dy, passerSpeed;          
 
-	private Image heart;                               
+	public Image heart;                               
 	private Image passer;
 	private Image pack;
 	/** * Images of our car according to the movement */
 	private Image up, down, left, right;          
 	/** * Images for our map */
 
-	private Image house, grass, road;
+	private Image house, grass;
 
 	/** * Car_x, car_y -> coordinates of the car; car_dx, car_dy -> horizontal and vertical directions. Determined in TAdapter class (extends KeyAdapter)**/
 	public int car_x, car_y, car_dx, car_dy;                         
@@ -116,7 +116,7 @@ public class GameLogic extends JPanel implements ActionListener{
 	};
 	
     private final int validSpeeds[] = {1, 2, 3, 4, 6, 8};
-    private final int maxSpeed = 6;
+
 
     private int currentSpeed = 3;
     private short[] screenData;
@@ -158,7 +158,6 @@ public class GameLogic extends JPanel implements ActionListener{
 		    passer = ImageIO.read(passer1);
 		    pack = ImageIO.read(pack1);
 		    house = ImageIO.read(house1);
-		    road = ImageIO.read(road1);
 		    grass = ImageIO.read(grass1);
 		    heart = ImageIO.read(heart1);
 		    
@@ -623,7 +622,7 @@ public class GameLogic extends JPanel implements ActionListener{
 		    /**
 		     * I add this keyReleased function to make the car to not move continiously
 		     * Now it move square by square
-		     * If the kwy is released the car doesn't move anymore
+		     * If the key is released the car doesn't move anymore
 		     */
 		    
 		    public void keyReleased(KeyEvent e) {
