@@ -37,6 +37,9 @@ public class GameLogic extends JPanel implements ActionListener{
 	private boolean carrying = false;                                 
 	/** * All packages delivered => message displayed */
 	boolean display = false;								          
+
+	private int n_packages = 0;
+	private int level = 1;
 	
 	/** * How big blocks are in the game */
 	public final int block_size = 24;                                 
@@ -47,10 +50,7 @@ public class GameLogic extends JPanel implements ActionListener{
 	final int screen_size = block_size * n_blocks;   
 	
 	/** * Maximum number of passers */
-	private final int max_passers = 12; 
-	
-	/** * Speed of our car */
-	private final int car_speed = 6;                                  
+	private final int max_passers = 6;                                 
 
 	/** * Initial number of passers */
 	int n_passers = 3;                                                
@@ -60,25 +60,26 @@ public class GameLogic extends JPanel implements ActionListener{
 	/** * To determine number and position of the passer */                                        
 	public int [] passer_x, passer_y, passer_dx, passer_dy, passerSpeed;          
 
-	Image heart;                               
+	public Image heart;                               
 	private Image passer;
 	private Image pack;
 	/** * Images of our car according to the movement */
 	private Image up, down, left, right;          
 	/** * Images for our map */
-	private Image house, grass, road;
+
+	private Image house, grass;
 
 	/** * Car_x, car_y -> coordinates of the car; car_dx, car_dy -> horizontal and vertical directions. Determined in TAdapter class (extends KeyAdapter)**/
 	public int car_x, car_y, car_dx, car_dy;                         
 	public int req_dx, req_dy;                                      
 
-	
 	/**
 	 *  Description of each number in the map.
 	 * 0 - house obstacle; 1- left border; 2 - top border; 4 - right border
 	 * 8 - bottom border; 16 - road; 32 - grass; 64 - package; 128 - delivery point
 	 */
-	public final short levelData[] = {
+	public short levelData[] = {
+
 			19, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 38,  0,  0,
 			17, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 36,  0,  0,
 			17, 16, 16, 80, 16, 16, 16, 16, 16, 16, 16, 16, 32, 42, 46,
@@ -96,16 +97,32 @@ public class GameLogic extends JPanel implements ActionListener{
 			25, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 28,
 	};
 	
+	private short levelData2[] = {
+			19, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 38,  0,  0,
+			17, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 36,  0,  0,
+			17, 16, 16, 80, 16, 16, 16, 16, 16, 16, 80, 16, 32, 42, 46,
+			41, 40, 32, 40, 40, 32, 40, 40, 32, 16, 16, 16, 36,  0,  0,
+			0,   0, 37,   0, 0, 37,  0,  0, 33, 16, 16, 16, 36,  0,  0,
+			0,   0, 37,   0, 0, 37,  0,  0, 33, 16, 16, 16, 32, 34, 38,
+			35, 34, 32, 34, 34, 32, 34, 34, 32, 16, 16, 16, 32, 32, 36,
+			17, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 20,
+			17, 16, 16, 144, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 20,
+			17, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 20,
+			41, 40, 32, 40, 40, 32, 40, 40, 32, 16, 16, 16, 32, 40, 44,
+			0,   0, 37,  0,  0, 37,  0,  0, 33, 16, 16, 16, 36,  0,  0,
+			0,   0, 37,  0,  0, 37,  0,  0, 33, 16, 16, 16, 36,  0,  0,
+			35, 34, 32, 34, 34, 32, 34, 34, 32, 16, 16, 16, 32, 34, 38,
+			25, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 28,
+	};
+	
     private final int validSpeeds[] = {1, 2, 3, 4, 6, 8};
-    private final int maxSpeed = 6;
+
 
     private int currentSpeed = 3;
     private short[] screenData;
     private Timer timer;
-    
-    //collision var
-    private boolean shouldMoveCar = false;
 
+    
 
 	/*
 	 *  Constructor to call different functions
@@ -123,16 +140,16 @@ public class GameLogic extends JPanel implements ActionListener{
 	 */
 	private void loadImages() {
 		try {
-		    File up1 = new File("C:\\Users\\prisa\\git\\PIP-Proiect\\src\\main\\java\\images\\car_up.png");
-		    File left1 = new File("C:\\Users\\prisa\\git\\PIP-Proiect\\src\\main\\java\\images\\car_left.png");
-		    File right1 = new File("C:\\Users\\prisa\\git\\PIP-Proiect\\src\\main\\java\\images\\car_right.png");
-		    File passer1 = new File("C:\\Users\\prisa\\git\\PIP-Proiect\\src\\main\\java\\images\\p_front.png");
-		    File down1 = new File("C:\\Users\\prisa\\git\\PIP-Proiect\\src\\main\\java\\images\\car_down.png");
-		    File heart1 = new File("C:\\Users\\prisa\\git\\PIP-Proiect\\src\\main\\java\\images\\heart.png");
-		    File pack1 = new File("C:\\Users\\prisa\\git\\PIP-Proiect\\src\\main\\java\\images\\pack.png");
-		    File house1 = new File("C:\\Users\\prisa\\git\\PIP-Proiect\\src\\main\\java\\images\\house1.png");
-		    File road1 = new File("C:\\Users\\prisa\\git\\PIP-Proiect\\src\\main\\java\\images\\road.png");
-		    File grass1 = new File("C:\\Users\\prisa\\git\\PIP-Proiect\\src\\main\\java\\images\\grass1.png");
+		    File up1 = new File("D:\\AC facultate\\anu 3 sem 2\\PIP-pr\\Proiect-final\\PIP-Proiect\\src\\main\\java\\images\\car_up.png");
+		    File left1 = new File("D:\\AC facultate\\anu 3 sem 2\\PIP-pr\\Proiect-final\\PIP-Proiect\\src\\main\\java\\images\\car_left.png");
+		    File right1 = new File("D:\\AC facultate\\anu 3 sem 2\\PIP-pr\\Proiect-final\\PIP-Proiect\\src\\main\\java\\images\\car_right.png");
+		    File passer1 = new File("D:\\AC facultate\\anu 3 sem 2\\PIP-pr\\Proiect-final\\PIP-Proiect\\src\\main\\java\\images\\p_front.png");
+		    File down1 = new File("D:\\AC facultate\\anu 3 sem 2\\PIP-pr\\Proiect-final\\PIP-Proiect\\src\\main\\java\\images\\car_down.png");
+		    File heart1 = new File("D:\\AC facultate\\anu 3 sem 2\\PIP-pr\\Proiect-final\\PIP-Proiect\\src\\main\\java\\images\\heart.png");
+		    File pack1 = new File("D:\\AC facultate\\anu 3 sem 2\\PIP-pr\\Proiect-final\\PIP-Proiect\\src\\main\\java\\images\\pack.png");
+		    File house1 = new File("D:\\AC facultate\\anu 3 sem 2\\PIP-pr\\Proiect-final\\PIP-Proiect\\src\\main\\java\\images\\house1.png");
+		    File road1 = new File("D:\\AC facultate\\anu 3 sem 2\\PIP-pr\\Proiect-final\\PIP-Proiect\\src\\main\\java\\images\\road.png");
+		    File grass1 = new File("D:\\AC facultate\\anu 3 sem 2\\PIP-pr\\Proiect-final\\PIP-Proiect\\src\\main\\java\\images\\grass1.png");
 		    
 		    up = ImageIO.read(up1);
 		    down = ImageIO.read(down1);
@@ -141,7 +158,6 @@ public class GameLogic extends JPanel implements ActionListener{
 		    passer = ImageIO.read(passer1);
 		    pack = ImageIO.read(pack1);
 		    house = ImageIO.read(house1);
-		    road = ImageIO.read(road1);
 		    grass = ImageIO.read(grass1);
 		    heart = ImageIO.read(heart1);
 		    
@@ -330,15 +346,8 @@ public class GameLogic extends JPanel implements ActionListener{
 		/** *  If allPackagesDelivered is still true, we can move to the next level. */
 		if (allPackagesDelivered) {                                 
 			/** * Increasing the score by 50 */
-			score += 50;                                            
-
-			if (n_passers < max_passers) {
-				n_passers++;
-			}
-
-			if (currentSpeed < maxSpeed) {
-				currentSpeed++;
-			}
+			score += 50;                                                                     
+			allPackagesDelivered = false;
 			/** * For now we restart the game when we completed delivering packages and just increase the number of passers and their speed **/
 			initLevel();                                            
 		}
@@ -372,7 +381,9 @@ public class GameLogic extends JPanel implements ActionListener{
        * setting the position of all 6 passers in block lines
        */
         for (int i = 0; i < n_passers; i++) {
+
         	/** * the passer move one square and the decides if want to change direction after finish moving in square **/
+
             if (passer_x[i] % block_size == 0 && passer_y[i] % block_size == 0) {
                 pos = passer_x[i] / block_size + n_blocks * (int) (passer_y[i] / block_size);
 
@@ -440,9 +451,9 @@ public class GameLogic extends JPanel implements ActionListener{
 
                 dying = true;
             }
+        	}
         }
-    }
-
+    
 
 
 	/**
@@ -472,10 +483,13 @@ public class GameLogic extends JPanel implements ActionListener{
 
 	            /** *If the car is on the block with a package, the package disappears */
 	            if ((screenData[newPos] & 64) != 0) {
+	            	
 	                levelData[newPos] = (short) (screenData[newPos] & 16);
+	                n_packages++;
 	                carrying = true; /** * The driver picked up the package and has to deliver it */
+
 	            }
-	            if ((screenData[newPos] & 128) != 0 && carrying) {
+	            if (((screenData[newPos] & 128) != 0 && carrying && level == 1) || ((screenData[newPos] & 128) != 0 && carrying && level == 2 && n_packages == 2)) {
 	                levelData[newPos] = (short) (screenData[newPos] & 16);
 	                carrying = false; /** * The driver delivered the package */
 	                display = true;
@@ -498,6 +512,15 @@ public class GameLogic extends JPanel implements ActionListener{
 
 		int dy = 1;
 		int random;
+		
+		if(display == true) {
+			levelData = levelData2;
+			level = 2;
+			display = false;
+			n_packages = 0;
+			lives = 3;
+		}
+		
 
 		for(int i = 0; i < n_passers; i++) {
 
@@ -516,6 +539,7 @@ public class GameLogic extends JPanel implements ActionListener{
 			}
 
 			passerSpeed[i] = validSpeeds[random];
+			System.out.println(random + " " + i );
 		}
 
 		car_x = 10 * block_size;
@@ -594,10 +618,11 @@ public class GameLogic extends JPanel implements ActionListener{
 		    }
 
 		    @Override
+
 		    /**
 		     * I add this keyReleased function to make the car to not move continiously
 		     * Now it move square by square
-		     * If the kwy is released the car doesn't move anymore
+		     * If the key is released the car doesn't move anymore
 		     */
 		    
 		    public void keyReleased(KeyEvent e) {
